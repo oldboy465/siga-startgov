@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Acompanhamento de Processos - SIGA 2026 | UEMA</title>
+    
+    <!-- SheetJS (xlsx) para leitura e escrita nativa de planilhas Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js para gráficos interativos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- jsPDF e jsPDF-AutoTable para geração e exportação nativa de relatórios em PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --uema-blue: #003366;
+            --uema-dark-blue: #002244;
+            --uema-light-blue: #1e5a96;
+            --uema-accent: #d9534f;
+            --uema-gold: #c59b27;
+            --bg-body: #f4f6f9;
+            --bg-card: #ffffff;
+            --text-main: #2b303a;
+            --text-muted: #64748b;
+            --border-color: #dce2e6;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+            --radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Institucional UEMA */
+        header.institutional-header {
+            background: linear-gradient(135deg, var(--uema-dark-blue) 0%, var(--uema-blue) 100%);
+            color: #ffffff;
+            padding: 16px 28px;
+            box-shadow: var(--shadow-md);
+            border-bottom: 3px solid var(--uema-gold);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-title-box h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .header-title-box .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .header-title-box .badge-siga {
+            background-color: var(--uema-gold);
+            color: #000;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Botões */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary { background-color: #2b78c5; color: #fff; border-color: #20609e; }
+        .btn-primary:hover { background-color: #1a5690; }
+
+        .btn-success { background-color: #218838; color: #fff; border-color: #1e7e34; }
+        .btn-success:hover { background-color: #19692c; }
+
+        .btn-warning { background-color: #e0a800; color: #212529; border-color: #d39e00; }
+        .btn-warning:hover { background-color: #c69500; }
+
+        .btn-danger { background-color: #c82333; color: #fff; border-color: #bd2130; }
+        .btn-danger:hover { background-color: #a71d2a; }
+
+        .btn-light { background-color: #ffffff; color: var(--uema-dark-blue); border-color: var(--border-color); }
+        .btn-light:hover { background-color: #e9ecef; }
+
+        .btn-outline { background-color: transparent; color: #ffffff; border-color: rgba(255,255,255,0.4); }
+        .btn-outline:hover { background-color: rgba(255,255,255,0.15); border-color: #fff; }
+
+        /* Container Principal */
+        main.app-container {
+            padding: 22px 28px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Cartão Base */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 12px 18px;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-header h2 {
+            font-size: 1.05rem;
+            color: var(--uema-dark-blue);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        /* Banner de Espera / Empty State Inicial */
+        .empty-state {
+            background: #ffffff;
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 50px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            color: var(--uema-light-blue);
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            color: var(--uema-dark-blue);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 20px auto;
+            line-height: 1.5;
+        }
+
+        /* Metadados e Status de Importação */
+        .import-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #ffffff;
+            border-left: 4px solid var(--uema-blue);
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .file-meta-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .file-meta-item strong {
+            color: var(--uema-dark-blue);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.loaded { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-badge.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .status-badge.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-badge.empty { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+        /* KPIs / Cards com Alinhamento Fiel e Proteção contra Estouro */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .kpi-card {
+            background: #ffffff;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--uema-blue);
+            min-width: 0; /* Previne estouro no flex */
+            overflow: hidden;
+        }
+
+        .kpi-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            background: #eef4fb;
+            color: var(--uema-blue);
+            flex-shrink: 0; /* Nunca encolhe o ícone */
+        }
+
+        .kpi-data {
+            flex: 1;
+            min-width: 0; /* Previne overflow */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .kpi-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .kpi-value {
+            font-size: clamp(1.05rem, 1.2vw, 1.35rem);
+            font-weight: 800;
+            color: var(--uema-dark-blue);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .kpi-subtext {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Barra de Seleção Ativa */
+        .selection-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #eef5fc;
+            border: 1px solid #c9def5;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .selection-toolbar strong {
+            color: var(--uema-dark-blue);
+        }
+
+        /* Seção de Filtros */
+        .filter-controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .active-filters-info {
+            font-size: 0.84rem;
+            color: var(--uema-dark-blue);
+            font-weight: 600;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--uema-dark-blue);
+            text-transform: uppercase;
+        }
+
+        .filter-group input, 
+        .filter-group select {
+            padding: 7px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.82rem;
+            color: var(--text-main);
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filter-group input:focus, 
+        .filter-group select:focus {
+            border-color: var(--uema-light-blue);
+            box-shadow: 0 0 0 2px rgba(30, 90, 150, 0.15);
+        }
+
+        .filter-range {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-range input {
+            width: 100%;
+        }
+
+        /* Gráficos */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 18px;
+        }
+
+        .chart-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--uema-dark-blue);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #edf0f2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container-wrapper {
+            position: relative;
+            flex: 1;
+            min-height: 250px;
+            max-height: 280px;
+        }
+
+        /* Tabela de Dados e Barra de Ferramentas */
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .table-search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 380px;
+        }
+
+        .table-search-box input {
+            width: 100%;
+            padding: 7px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.82rem;
+        }
+
+        .table-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            max-height: 520px;
+        }
+
+        table.siga-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        table.siga-table thead {
+            background-color: var(--uema-blue);
+            color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        table.siga-table th {
+            padding: 9px 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.3px;
+            user-select: none;
+            border-right: 1px solid rgba(255,255,255,0.12);
+        }
+
+        table.siga-table th.sortable {
+            cursor: pointer;
+        }
+
+        table.siga-table th.sortable:hover {
+            background-color: var(--uema-light-blue);
+        }
+
+        table.siga-table th.chk-col,
+        table.siga-table td.chk-col {
+            width: 40px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        table.siga-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #edf0f2;
+            border-right: 1px solid #f1f3f5;
+            color: var(--text-main);
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        table.siga-table tbody tr {
+            transition: background-color 0.15s;
+        }
+
+        table.siga-table tbody tr:hover {
+            background-color: #f1f6fc;
+        }
+
+        table.siga-table tbody tr.row-selected {
+            background-color: #eaf3fd !important;
+        }
+
+        table.siga-table td.num-cell {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        /* Checkbox customizado */
+        input.custom-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--uema-blue);
+        }
+
+        /* Paginação */
+        .pagination-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 4px 0 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .pagination-btns button {
+            padding: 4px 10px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .pagination-btns button.active {
+            background: var(--uema-blue);
+            color: #ffffff;
+            border-color: var(--uema-blue);
+        }
+
+        .pagination-btns button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: var(--radius);
+            max-width: 860px;
+            width: 100%;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 14px 20px;
+            background: var(--uema-blue);
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+        }
+
+        .modal-header h3 {
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 10px 20px;
+            border-top: 1px solid var(--border-color);
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            border-bottom-left-radius: var(--radius);
+            border-bottom-right-radius: var(--radius);
+        }
+
+        .record-details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .record-detail-row {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            background: #fbfcfd;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 0.84rem;
+        }
+
+        .record-detail-row .detail-key {
+            font-weight: 700;
+            color: var(--uema-dark-blue);
+        }
+
+        .record-detail-row .detail-val {
+            word-break: break-word;
+            color: var(--text-main);
+        }
+
+        /* Área de Impressão Nativa (A4 Paisagem) */
+        #printable-report-area { display: none; }
+
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            header.institutional-header, main.app-container, footer.institutional-footer, .modal-overlay { display: none !important; }
+            #printable-report-area {
+                display: block !important;
+                padding: 10mm;
+                background: #ffffff;
+                color: #000000;
+            }
+            .report-header-print {
+                border-bottom: 2px solid #003366;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+            .report-header-print h1 { font-size: 15pt; color: #003366; text-transform: uppercase; margin-bottom: 3px; }
+            .report-header-print .meta { font-size: 8.5pt; color: #444; }
+            .report-summary-box {
+                margin: 12px 0;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                border: 1px solid #ccc;
+                padding: 8px;
+                background: #f9f9f9;
+            }
+            .report-summary-box .item { font-size: 8.5pt; }
+            .report-table-print {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+                font-size: 7.5pt;
+            }
+            .report-table-print th, .report-table-print td {
+                border: 1px solid #444;
+                padding: 4px 6px;
+                text-align: left;
+            }
+            .report-table-print th { background: #eee; font-weight: bold; }
+            @page { size: A4 landscape; margin: 8mm; }
+        }
+
+        footer.institutional-footer {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 14px 28px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO INSTITUCIONAL -->
+    <header class="institutional-header">
+        <div class="header-content">
+            <div class="header-title-box">
+                <h1>Painel de Acompanhamento de Processos</h1>
+                <div class="subtitle">
+                    <span class="badge-siga">SIGA 2026</span>
+                    <span>Universidade Estadual do Maranhão - UEMA</span>
+                    <span style="opacity:0.6;">|</span>
+                    <span style="font-size: 0.8rem; opacity: 0.85;">Gestão Dinâmica &bull; PROPLAD / CSL / CCONV</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" />
+                
+                <button class="btn btn-warning" onclick="document.getElementById('excelFileInput').click();">
+                    <i class="fa-solid fa-file-excel"></i> IMPORTAR EXCEL (.XLSX)
+                </button>
+
+                <button class="btn btn-success" id="btnExportXlsx" onclick="window.app.exportToXLSX();" disabled title="Exporta dados filtrados no formato original">
+                    <i class="fa-solid fa-file-arrow-down"></i> EXPORTAR XLSX
+                </button>
+
+                <button class="btn btn-danger" id="btnExportPdf" onclick="window.app.exportToPDF();" disabled title="Exporta dados filtrados em documento PDF oficial">
+                    <i class="fa-solid fa-file-pdf"></i> EXPORTAR PDF
+                </button>
+
+                <button class="btn btn-light" id="btnShowErrors" onclick="window.app.openValidationModal();">
+                    <i class="fa-solid fa-triangle-exclamation"></i> VER ERROS (<span id="errorBadgeCount">0</span>)
+                </button>
+
+                <button class="btn btn-outline" onclick="window.app.printReport();" title="Imprimir relatório">
+                    <i class="fa-solid fa-print"></i> IMPRIMIR
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="app-container">
+
+        <!-- Banner com Metadados e Status -->
+        <div class="import-banner">
+            <div class="file-meta-info">
+                <div class="file-meta-item">
+                    <span>Arquivo:</span>
+                    <strong id="metaFileName">Nenhum arquivo importado</strong>
+                </div>
+                <div class="file-meta-item">
+                    <span>Aba Processada:</span>
+                    <strong id="metaSheetName">-</strong>
+                </div>
+                <div class="file-meta-item">
+                    <span>Última Importação:</span>
+                    <strong id="metaLastImport">-</strong>
+                </div>
+                <div class="file-meta-item">
+                    <span>Total de Processos:</span>
+                    <strong id="metaRecordCount">0</strong>
+                </div>
+                <div class="file-meta-item">
+                    <span>Colunas Estruturais:</span>
+                    <strong id="metaColumnCount">0</strong>
+                </div>
+            </div>
+
+            <div id="importStatusBadge" class="status-badge empty">
+                <i class="fa-solid fa-clock"></i> AGUARDANDO IMPORTAÇÃO
+            </div>
+        </div>
+
+        <!-- Estado Inicial Vazio (Sem Dados Pré-Cadastrados) -->
+        <div class="empty-state" id="emptyStateBox">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>Nenhum Arquivo Carregado</h3>
+            <p>Baixe a planilha Excel (<code>Processos SIGA atual.xlsx</code>) e clique no botão <strong>"IMPORTAR EXCEL (.XLSX)"</strong> acima. O sistema processará automaticamente a aba <strong>SIGA 2026</strong> ignorando as 3 primeiras linhas não estruturadas, mantendo todas as colunas oficiais e auditando datas e valores.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click();">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i> SELECIONAR PLANILHA AGORA
+            </button>
+        </div>
+
+        <!-- Seções que aparecem somente após carregar os dados -->
+        <div id="dashboardMainContent" style="display: none; flex-direction: column; gap: 20px;">
+
+            <!-- Barra de Seleção Ativa com Caixa de Seleção -->
+            <div class="selection-toolbar">
+                <div>
+                    <i class="fa-solid fa-list-check" style="color:var(--uema-blue); margin-right: 6px;"></i>
+                    <span>Modo de Seleção: </span>
+                    <strong id="selectionCounterText">Nenhum processo selecionado individualmente (cálculos sobre toda a visualização ativa).</strong>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-light" style="padding: 5px 10px; font-size: 0.78rem;" onclick="window.app.selectAllFiltered();">
+                        <i class="fa-solid fa-check-double"></i> Selecionar Todos Filtrados
+                    </button>
+                    <button class="btn btn-light" style="padding: 5px 10px; font-size: 0.78rem;" onclick="window.app.clearSelection();">
+                        <i class="fa-solid fa-xmark"></i> Desmarcar Todos
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs com Alinhamento Estrito anti-estouro -->
+            <section class="kpi-grid">
+                <div class="kpi-card" style="border-left-color: #003366;">
+                    <div class="kpi-icon"><i class="fa-solid fa-folder-open"></i></div>
+                    <div class="kpi-data">
+                        <div class="kpi-title">Processos Ativos</div>
+                        <div class="kpi-value" id="kpiTotalProcesses">0</div>
+                        <div class="kpi-subtext" id="kpiFilteredProcessesSub">Total na base: 0</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #28a745;">
+                    <div class="kpi-icon" style="color: #28a745; background: #eaf6ec;"><i class="fa-solid fa-money-bill-wave"></i></div>
+                    <div class="kpi-data">
+                        <div class="kpi-title">Montante Financeiro Total</div>
+                        <div class="kpi-value" id="kpiTotalValue">R$ 0,00</div>
+                        <div class="kpi-subtext" id="kpiAvgValueSub">Média: R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #17a2b8;">
+                    <div class="kpi-icon" style="color: #17a2b8; background: #e8f7f9;"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="kpi-data">
+                        <div class="kpi-title">Processos Autorizados</div>
+                        <div class="kpi-value" id="kpiAuthorizedCount">0</div>
+                        <div class="kpi-subtext" id="kpiAuthorizedPct">0% do total ativo</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #ffc107;">
+                    <div class="kpi-icon" style="color: #d39e00; background: #fdfae7;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="kpi-data">
+                        <div class="kpi-title">Aguard. Autorização</div>
+                        <div class="kpi-value" id="kpiPendingCount">0</div>
+                        <div class="kpi-subtext" id="kpiPendingPct">0% do total ativo</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #6f42c1;">
+                    <div class="kpi-icon" style="color: #6f42c1; background: #f3effa;"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="kpi-data">
+                        <div class="kpi-title">Cadastrados no SIGA</div>
+                        <div class="kpi-value" id="kpiSigaCount">0</div>
+                        <div class="kpi-subtext" id="kpiSigaPct">Com nº de processo</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="border-left-color: #20c997;">
+                    <div class="kpi-icon" style="color: #20c997; background: #eafaf5;"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="kpi-data">
+                        <div class="kpi-title">Contratados / Assinados</div>
+                        <div class="kpi-value" id="kpiContractedCount">0</div>
+                        <div class="kpi-subtext" id="kpiContractedPct">Status Final</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Painel Dinâmico de Filtros -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-filter"></i> Filtros de Pesquisa e Refinamento</h2>
+                    <div style="display:flex; gap: 8px;">
+                        <button class="btn btn-light" onclick="window.app.clearAllFilters();">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> LIMPAR FILTROS
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="filter-controls-header">
+                        <div class="active-filters-info">
+                            <span>Filtros ativos: <strong id="activeFilterBadgeCount">0</strong></span>
+                            <span>Itens filtrados: <strong id="filteredCountInfo">0 de 0</strong></span>
+                            <span>Valor total filtrado: <strong id="filteredValueSum">R$ 0,00</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="filters-grid" id="dynamicFiltersContainer"></div>
+                </div>
+            </section>
+
+            <!-- Painel de Gráficos -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Visualizações Gerenciais</h2>
+                </div>
+                <div class="card-body">
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <div class="chart-box-title">
+                                <span>Processos por Modalidade</span>
+                                <i class="fa-solid fa-chart-column text-muted"></i>
+                            </div>
+                            <div class="chart-container-wrapper">
+                                <canvas id="chartModalidade"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <div class="chart-box-title">
+                                <span>Valor Total por Fonte</span>
+                                <i class="fa-solid fa-chart-pie text-muted"></i>
+                            </div>
+                            <div class="chart-container-wrapper">
+                                <canvas id="chartFonte"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <div class="chart-box-title">
+                                <span>Top 8 Localizações Atuais</span>
+                                <i class="fa-solid fa-building-columns text-muted"></i>
+                            </div>
+                            <div class="chart-container-wrapper">
+                                <canvas id="chartLocalizacao"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <div class="chart-box-title">
+                                <span>Status da Solicitação</span>
+                                <i class="fa-solid fa-bars-progress text-muted"></i>
+                            </div>
+                            <div class="chart-container-wrapper">
+                                <canvas id="chartStatus"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabela Completa de Registros Tabulares com Checkbox -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-table"></i> Base Analítica de Processos (Aba SIGA 2026)</h2>
+                    <div style="display:flex; gap: 8px;">
+                        <button class="btn btn-success" onclick="window.app.exportToXLSX();">
+                            <i class="fa-solid fa-file-excel"></i> Exportar XLSX
+                        </button>
+                        <button class="btn btn-danger" onclick="window.app.exportToPDF();">
+                            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-toolbar">
+                        <div class="table-search-box">
+                            <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i>
+                            <input type="text" id="globalTableSearch" placeholder="Pesquisar em todas as colunas..." oninput="window.app.handleTableSearch(this.value);" />
+                        </div>
+
+                        <div class="table-actions-right">
+                            <span style="font-size:0.82rem; color:var(--text-muted);">Por página:</span>
+                            <select id="recordsPerPageSelect" onchange="window.app.setRecordsPerPage(this.value);" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color);">
+                                <option value="15">15</option>
+                                <option value="30" selected>30</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="siga-table" id="dataTableProcessos">
+                            <thead id="dataTableHead"></thead>
+                            <tbody id="dataTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination-footer">
+                        <div id="paginationInfo">Mostrando 0 de 0 registros</div>
+                        <div class="pagination-btns" id="paginationButtons"></div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL DE ERROS DE VALIDAÇÃO -->
+    <div class="modal-overlay" id="modalValidation">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-shield-halved"></i> Auditoria de Inconsistências de Dados</h3>
+                <button class="modal-close" onclick="window.app.closeModal('modalValidation');">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 14px; background:#f8f9fa; padding:12px; border-radius:4px; font-size:0.85rem;">
+                    <div>Status: <strong id="valStatusText">-</strong></div>
+                    <div>Células Auditadas: <strong id="valTotalCells">-</strong></div>
+                    <div>Erros Detectados: <strong id="valErrorCount" style="color:var(--danger-color);">-</strong></div>
+                </div>
+
+                <div class="table-responsive" style="max-height: 400px;">
+                    <table class="siga-table" style="font-size: 0.78rem;">
+                        <thead>
+                            <tr style="background-color: var(--uema-dark-blue);">
+                                <th style="width: 50px;">Linha</th>
+                                <th style="width: 60px;">Coluna</th>
+                                <th>Campo</th>
+                                <th style="width: 70px;">Célula</th>
+                                <th>Valor Encontrado</th>
+                                <th>Tipo Esperado</th>
+                                <th>Inconformidade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="valErrorsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" onclick="window.app.closeModal('modalValidation');">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE FICHA DO PROCESSO -->
+    <div class="modal-overlay" id="modalProcessDetail">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-lines"></i> Ficha Completa do Processo</h3>
+                <button class="modal-close" onclick="window.app.closeModal('modalProcessDetail');">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="record-details-grid" id="processDetailsContainer"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" onclick="window.app.closeModal('modalProcessDetail');">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE IMPRESSÃO (PRINT MEDIA) -->
+    <div id="printable-report-area">
+        <div class="report-header-print">
+            <h1>Universidade Estadual do Maranhão - UEMA</h1>
+            <div style="font-size: 11pt; font-weight: bold; color: #333;">Relatório Gerencial de Acompanhamento de Processos - SIGA 2026</div>
+            <div class="meta" id="printReportMeta"></div>
+        </div>
+
+        <div class="report-summary-box" id="printReportSummary"></div>
+
+        <table class="report-table-print">
+            <thead id="printReportThead"></thead>
+            <tbody id="printReportTbody"></tbody>
+        </table>
+    </div>
+
+    <footer class="institutional-footer">
+        Universidade Estadual do Maranhão - Pró-Reitoria de Planejamento e Administração | SIGA 2026 Dashboard Dinâmico
+    </footer>
+
+    <!-- MOTOR JAVASCRIPT REATIVO -->
+    <script>
+        window.app = (function() {
+            'use strict';
+
+            const TARGET_SHEET_NAME = "SIGA 2026";
+            
+            // As 14 colunas originais oficiais
+            const OFFICIAL_COLUMNS = [
+                'ANO/NUMERO', 'Nº PROCESSO SEI', 'MODALIDADE', 'RESUMO DO OBJETO',
+                'VALOR TOTAL', 'FONTE', 'STATUS DA SOLICITAÇÃO', 'DATA DA AUTORIZAÇÃO',
+                'Nº PROCESSO SIGA', 'DATA DE AUTUAÇÃO', 'LOCALIZAÇÃO ATUAL',
+                'STATUS DE TRAMITAÇÃO', 'STATUS FINAL', 'OBSERVAÇÃO'
+            ];
+
+            // Estado da aplicação sem nenhum dado pré-cadastrado
+            let state = {
+                rawWorkbook: null,
+                currentFileName: "",
+                headers: [],
+                rawRows: [],
+                normalizedRows: [],
+                filteredRows: [],
+                selectedRowKeys: new Set(), // Conjunto de chaves dos processos selecionados via checkbox
+                validationLog: {
+                    status: "empty",
+                    totalCells: 0,
+                    errors: []
+                },
+                filters: {
+                    search: "",
+                    categorical: {},
+                    ranges: {
+                        valorMin: null,
+                        valorMax: null,
+                        dataAutIni: null,
+                        dataAutFim: null
+                    }
+                },
+                pagination: {
+                    currentPage: 1,
+                    recordsPerPage: 30,
+                    sortColumn: null,
+                    sortDirection: 'asc'
+                },
+                charts: {}
+            };
+
+            function init() {
+                const fileInput = document.getElementById('excelFileInput');
+                fileInput.addEventListener('change', handleFileSelection);
+
+                let debounceTimer;
+                window.debouncedSearch = function(val) {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        state.filters.search = val.trim().toLowerCase();
+                        applyFilters();
+                    }, 250);
+                };
+            }
+
+            function handleFileSelection(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                state.currentFileName = file.name;
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { 
+                            type: 'array', 
+                            cellDates: true, 
+                            raw: true 
+                        });
+                        state.rawWorkbook = workbook;
+                        processWorkbook(workbook, file.name);
+                    } catch (err) {
+                        alert("Erro ao ler arquivo Excel: " + err.message);
+                    }
+                };
+
+                reader.readAsArrayBuffer(file);
+            }
+
+            function processWorkbook(workbook, fileName) {
+                const sheetNames = workbook.SheetNames;
+                
+                let targetSheet = sheetNames.find(s => s.trim().toUpperCase() === TARGET_SHEET_NAME);
+                if (!targetSheet) {
+                    targetSheet = sheetNames.find(s => s.toUpperCase().includes("2026")) || sheetNames[0];
+                }
+
+                const worksheet = workbook.Sheets[targetSheet];
+                const rawSheetData = XLSX.utils.sheet_to_json(worksheet, { 
+                    header: 1, 
+                    defval: null, 
+                    raw: true 
+                });
+
+                if (!rawSheetData || rawSheetData.length === 0) {
+                    alert(`A aba '${targetSheet}' está vazia.`);
+                    return;
+                }
+
+                // Identifica a linha de cabeçalho na linha 4 (índice 3) ou busca dinâmica
+                let headerRowIndex = -1;
+                for (let r = 0; r < Math.min(10, rawSheetData.length); r++) {
+                    const row = rawSheetData[r];
+                    if (!row) continue;
+                    const rowStr = row.map(c => String(c || '').trim().toUpperCase());
+                    if (rowStr.includes("MODALIDADE") || rowStr.includes("RESUMO DO OBJETO") || rowStr.includes("Nº PROCESSO SEI")) {
+                        headerRowIndex = r;
+                        break;
+                    }
+                }
+
+                if (headerRowIndex === -1) headerRowIndex = 3;
+
+                // Extração dos cabeçalhos originais (14 colunas oficiais)
+                const headerRow = rawSheetData[headerRowIndex];
+                const headers = [];
+                for (let c = 0; c < 14; c++) {
+                    const val = headerRow && headerRow[c] !== undefined && headerRow[c] !== null ? String(headerRow[c]).trim() : OFFICIAL_COLUMNS[c];
+                    headers.push(val);
+                }
+
+                // Extrai registros a partir da linha seguinte (linha 5 no Excel)
+                const rawRecords = [];
+                for (let r = headerRowIndex + 1; r < rawSheetData.length; r++) {
+                    const row = rawSheetData[r];
+                    if (!row) continue;
+                    const hasData = row.slice(0, 14).some(cell => cell !== null && cell !== undefined && String(cell).trim() !== "");
+                    if (hasData) {
+                        rawRecords.push({
+                            sheetRowNumber: r + 1,
+                            cells: row.slice(0, 14)
+                        });
+                    }
+                }
+
+                state.headers = headers;
+                state.rawRows = rawRecords;
+
+                // Auditoria e Validação Estrita
+                validateDataset(headers, rawRecords);
+
+                // Normalização Interna (dados originais preservados)
+                normalizeData();
+
+                // Atualiza UI
+                updateMetaDisplay(fileName, targetSheet, rawRecords.length, headers.length, state.validationLog.status);
+                
+                document.getElementById('emptyStateBox').style.display = 'none';
+                document.getElementById('dashboardMainContent').style.display = 'flex';
+                document.getElementById('btnExportXlsx').removeAttribute('disabled');
+                document.getElementById('btnExportPdf').removeAttribute('disabled');
+
+                buildDynamicFiltersUI();
+                state.selectedRowKeys.clear();
+                applyFilters();
+            }
+
+            // Auditoria de inconsistências
+            function validateDataset(headers, records) {
+                const errors = [];
+                let totalCells = 0;
+
+                records.forEach(rec => {
+                    const rowNum = rec.sheetRowNumber;
+                    
+                    headers.forEach((headerName, colIdx) => {
+                        totalCells++;
+                        const cellVal = rec.cells[colIdx];
+                        const colLetter = getExcelColumnLetter(colIdx);
+                        const cellRef = `${colLetter}${rowNum}`;
+
+                        if (cellVal === null || cellVal === undefined || String(cellVal).trim() === "") return;
+
+                        // Erro de fórmula pré-existente
+                        if (String(cellVal).includes("#VALUE!") || String(cellVal).includes("#N/A") || String(cellVal).includes("#REF!")) {
+                            errors.push({
+                                line: rowNum,
+                                colLetter: colLetter,
+                                header: headerName,
+                                cell: cellRef,
+                                val: String(cellVal),
+                                expected: "Dado Válido",
+                                problem: "Fórmula com erro (" + cellVal + ") na planilha de origem."
+                            });
+                            return;
+                        }
+
+                        // Validação: VALOR TOTAL
+                        if (headerName === "VALOR TOTAL") {
+                            const str = String(cellVal).trim();
+                            if (str === "R$" || str === "R$ -" || str === "-" || str === "_") {
+                                errors.push({
+                                    line: rowNum,
+                                    colLetter: colLetter,
+                                    header: headerName,
+                                    cell: cellRef,
+                                    val: str,
+                                    expected: "Valor Monetário Numérico",
+                                    problem: "Texto inserido no lugar de valor numérico."
+                                });
+                            } else {
+                                const clean = str.replace(/[R$\s]/g, '').replace(',', '.');
+                                if (isNaN(parseFloat(clean))) {
+                                    errors.push({
+                                        line: rowNum,
+                                        colLetter: colLetter,
+                                        header: headerName,
+                                        cell: cellRef,
+                                        val: str,
+                                        expected: "Valor Numérico",
+                                        problem: "Incompatível com valor monetário."
+                                    });
+                                }
+                            }
+                        }
+
+                        // Validação: DATA DA AUTORIZAÇÃO / DATA DE AUTUAÇÃO
+                        if (headerName === "DATA DA AUTORIZAÇÃO" || headerName === "DATA DE AUTUAÇÃO") {
+                            const parsed = parseCellDate(cellVal);
+                            if (!parsed) {
+                                errors.push({
+                                    line: rowNum,
+                                    colLetter: colLetter,
+                                    header: headerName,
+                                    cell: cellRef,
+                                    val: String(cellVal),
+                                    expected: "Data (dd/mm/aaaa)",
+                                    problem: "Texto irregular ou datas múltiplas/compostas no campo."
+                                });
+                            }
+                        }
+                    });
+                });
+
+                state.validationLog.totalCells = totalCells;
+                state.validationLog.errors = errors;
+                state.validationLog.status = errors.length > 0 ? "error" : "valid";
+
+                const badge = document.getElementById('errorBadgeCount');
+                badge.innerText = errors.length;
+                if (errors.length > 0) {
+                    document.getElementById('btnShowErrors').classList.add('btn-danger');
+                    document.getElementById('btnShowErrors').classList.remove('btn-light');
+                } else {
+                    document.getElementById('btnShowErrors').classList.add('btn-light');
+                    document.getElementById('btnShowErrors').classList.remove('btn-danger');
+                }
+            }
+
+            function normalizeData() {
+                const headers = state.headers;
+                state.normalizedRows = state.rawRows.map(rec => {
+                    const rowObj = {
+                        _sheetRowNum: rec.sheetRowNumber,
+                        _rawCells: rec.cells
+                    };
+
+                    headers.forEach((h, idx) => {
+                        const rawVal = rec.cells[idx];
+                        rowObj[h] = rawVal;
+
+                        if (h === "VALOR TOTAL") {
+                            let num = 0;
+                            if (typeof rawVal === 'number') num = rawVal;
+                            else if (rawVal !== null && rawVal !== undefined) {
+                                const cleanStr = String(rawVal).replace(/[R$\s]/g, '').replace(',', '.');
+                                const parsed = parseFloat(cleanStr);
+                                num = !isNaN(parsed) ? parsed : 0;
+                            }
+                            rowObj._numValorTotal = num;
+                        }
+
+                        if (h === "DATA DA AUTORIZAÇÃO") {
+                            rowObj._dateAutorizacao = parseCellDate(rawVal);
+                        }
+
+                        if (h === "DATA DE AUTUAÇÃO") {
+                            rowObj._dateAutuacao = parseCellDate(rawVal);
+                        }
+                    });
+
+                    return rowObj;
+                });
+            }
+
+            function buildDynamicFiltersUI() {
+                const container = document.getElementById('dynamicFiltersContainer');
+                container.innerHTML = "";
+
+                const targetFilterCols = [
+                    { col: "MODALIDADE", label: "Modalidade" },
+                    { col: "FONTE", label: "Fonte de Recursos" },
+                    { col: "STATUS DA SOLICITAÇÃO", label: "Status da Solicitação" },
+                    { col: "LOCALIZAÇÃO ATUAL", label: "Localização Atual" },
+                    { col: "STATUS FINAL", label: "Status Final" }
+                ];
+
+                targetFilterCols.forEach(filterDef => {
+                    if (!state.headers.includes(filterDef.col)) return;
+
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = "filter-group";
+
+                    const label = document.createElement('label');
+                    label.innerText = filterDef.label;
+
+                    const select = document.createElement('select');
+                    select.id = `filter_col_${sanitizeId(filterDef.col)}`;
+                    select.dataset.column = filterDef.col;
+                    select.innerHTML = `<option value="">(Todos)</option>`;
+                    select.onchange = function() {
+                        const val = this.value;
+                        if (val === "") {
+                            delete state.filters.categorical[filterDef.col];
+                        } else {
+                            state.filters.categorical[filterDef.col] = val;
+                        }
+                        applyFilters();
+                    };
+
+                    groupDiv.appendChild(label);
+                    groupDiv.appendChild(select);
+                    container.appendChild(groupDiv);
+                });
+
+                // Faixa de Valor
+                if (state.headers.includes("VALOR TOTAL")) {
+                    const groupVal = document.createElement('div');
+                    groupVal.className = "filter-group";
+                    groupVal.innerHTML = `
+                        <label>Faixa de Valor (R$)</label>
+                        <div class="filter-range">
+                            <input type="number" id="filter_val_min" placeholder="Mínimo" onchange="window.app.handleRangeFilter('valorMin', this.value);" />
+                            <input type="number" id="filter_val_max" placeholder="Máximo" onchange="window.app.handleRangeFilter('valorMax', this.value);" />
+                        </div>
+                    `;
+                    container.appendChild(groupVal);
+                }
+
+                // Intervalo de Datas
+                if (state.headers.includes("DATA DA AUTORIZAÇÃO")) {
+                    const groupDate = document.createElement('div');
+                    groupDate.className = "filter-group";
+                    groupDate.innerHTML = `
+                        <label>Data de Autorização</label>
+                        <div class="filter-range">
+                            <input type="date" id="filter_date_ini" onchange="window.app.handleRangeFilter('dataAutIni', this.value);" />
+                            <input type="date" id="filter_date_fim" onchange="window.app.handleRangeFilter('dataAutFim', this.value);" />
+                        </div>
+                    `;
+                    container.appendChild(groupDate);
+                }
+
+                updateDropdownOptions();
+            }
+
+            function updateDropdownOptions() {
+                const targetFilterCols = [
+                    "MODALIDADE", "FONTE", "STATUS DA SOLICITAÇÃO", "LOCALIZAÇÃO ATUAL", "STATUS FINAL"
+                ];
+
+                targetFilterCols.forEach(colName => {
+                    const el = document.getElementById(`filter_col_${sanitizeId(colName)}`);
+                    if (!el) return;
+
+                    const currentSelected = state.filters.categorical[colName] || "";
+                    
+                    const matchingRows = state.normalizedRows.filter(row => {
+                        for (let otherCol in state.filters.categorical) {
+                            if (otherCol !== colName && state.filters.categorical[otherCol]) {
+                                const rowVal = String(row[otherCol] || '').trim();
+                                if (rowVal !== state.filters.categorical[otherCol]) return false;
+                            }
+                        }
+                        return true;
+                    });
+
+                    const uniqueVals = new Set();
+                    matchingRows.forEach(r => {
+                        const val = r[colName];
+                        if (val !== null && val !== undefined && String(val).trim() !== "") {
+                            uniqueVals.add(String(val).trim());
+                        }
+                    });
+
+                    const sortedVals = Array.from(uniqueVals).sort();
+
+                    let html = `<option value="">(Todos)</option>`;
+                    sortedVals.forEach(v => {
+                        const isSelected = v === currentSelected ? 'selected' : '';
+                        html += `<option value="${escapeHtml(v)}" ${isSelected}>${escapeHtml(v)}</option>`;
+                    });
+                    el.innerHTML = html;
+                });
+            }
+
+            function handleRangeFilter(type, value) {
+                state.filters.ranges[type] = value !== "" ? value : null;
+                applyFilters();
+            }
+
+            function clearAllFilters() {
+                state.filters.search = "";
+                state.filters.categorical = {};
+                state.filters.ranges = { valorMin: null, valorMax: null, dataAutIni: null, dataAutFim: null };
+
+                document.getElementById('globalTableSearch').value = "";
+                const valMin = document.getElementById('filter_val_min');
+                if (valMin) valMin.value = "";
+                const valMax = document.getElementById('filter_val_max');
+                if (valMax) valMax.value = "";
+                const dIni = document.getElementById('filter_date_ini');
+                if (dIni) dIni.value = "";
+                const dFim = document.getElementById('filter_date_fim');
+                if (dFim) dFim.value = "";
+
+                applyFilters();
+            }
+
+            function applyFilters() {
+                const { search, categorical, ranges } = state.filters;
+
+                state.filteredRows = state.normalizedRows.filter(row => {
+                    if (search) {
+                        const rowText = Object.values(row)
+                            .filter(v => typeof v === 'string' || typeof v === 'number')
+                            .join(' ')
+                            .toLowerCase();
+                        if (!rowText.includes(search)) return false;
+                    }
+
+                    for (let col in categorical) {
+                        const targetVal = categorical[col];
+                        if (targetVal) {
+                            const cellVal = String(row[col] || '').trim();
+                            if (cellVal !== targetVal) return false;
+                        }
+                    }
+
+                    if (ranges.valorMin !== null && !isNaN(ranges.valorMin)) {
+                        if (row._numValorTotal < parseFloat(ranges.valorMin)) return false;
+                    }
+                    if (ranges.valorMax !== null && !isNaN(ranges.valorMax)) {
+                        if (row._numValorTotal > parseFloat(ranges.valorMax)) return false;
+                    }
+
+                    if (ranges.dataAutIni) {
+                        if (!row._dateAutorizacao || row._dateAutorizacao < new Date(ranges.dataAutIni + "T00:00:00")) return false;
+                    }
+                    if (ranges.dataAutFim) {
+                        if (!row._dateAutorizacao || row._dateAutorizacao > new Date(ranges.dataAutFim + "T23:59:59")) return false;
+                    }
+
+                    return true;
+                });
+
+                // Remove da seleção itens que não estão mais nos filtros
+                const activeFilteredIds = new Set(state.filteredRows.map(r => r._sheetRowNum));
+                for (let selectedId of state.selectedRowKeys) {
+                    if (!activeFilteredIds.has(selectedId)) {
+                        state.selectedRowKeys.delete(selectedId);
+                    }
+                }
+
+                const activeCount = Object.keys(categorical).length + 
+                    (search ? 1 : 0) + 
+                    (ranges.valorMin !== null ? 1 : 0) + 
+                    (ranges.valorMax !== null ? 1 : 0) + 
+                    (ranges.dataAutIni ? 1 : 0) + 
+                    (ranges.dataAutFim ? 1 : 0);
+
+                document.getElementById('activeFilterBadgeCount').innerText = activeCount;
+                document.getElementById('filteredCountInfo').innerText = `${state.filteredRows.length} de ${state.normalizedRows.length}`;
+
+                updateSelectionToolbarUI();
+                recomputeMetricsAndRender();
+                updateDropdownOptions();
+            }
+
+            // Define o conjunto ativo para cálculos (se houver seleção de checkboxes, calcula sobre eles; senão, sobre os filtrados)
+            function getActiveCalculationRows() {
+                if (state.selectedRowKeys.size > 0) {
+                    return state.filteredRows.filter(r => state.selectedRowKeys.has(r._sheetRowNum));
+                }
+                return state.filteredRows;
+            }
+
+            function recomputeMetricsAndRender() {
+                updateKPIs();
+                updateCharts();
+                state.pagination.currentPage = 1;
+                renderTable();
+            }
+
+            // SELEÇÃO POR CHECKBOXES INDIVIDUAIS
+            function toggleRowSelection(sheetRowNum) {
+                if (state.selectedRowKeys.has(sheetRowNum)) {
+                    state.selectedRowKeys.delete(sheetRowNum);
+                } else {
+                    state.selectedRowKeys.add(sheetRowNum);
+                }
+                updateSelectionToolbarUI();
+                updateKPIs();
+                updateCharts();
+                renderTable();
+            }
+
+            function selectAllFiltered() {
+                state.filteredRows.forEach(r => state.selectedRowKeys.add(r._sheetRowNum));
+                updateSelectionToolbarUI();
+                updateKPIs();
+                updateCharts();
+                renderTable();
+            }
+
+            function clearSelection() {
+                state.selectedRowKeys.clear();
+                updateSelectionToolbarUI();
+                updateKPIs();
+                updateCharts();
+                renderTable();
+            }
+
+            function toggleSelectAllCheckbox(checked) {
+                if (checked) {
+                    selectAllFiltered();
+                } else {
+                    clearSelection();
+                }
+            }
+
+            function updateSelectionToolbarUI() {
+                const count = state.selectedRowKeys.size;
+                const counterText = document.getElementById('selectionCounterText');
+                if (count > 0) {
+                    counterText.innerHTML = `<strong>${count} processo(s) selecionado(s) manualmente</strong> (os KPIs, gráficos e exportações refletem esta seleção).`;
+                } else {
+                    counterText.innerText = `Nenhum processo selecionado individualmente (cálculos e exportações sobre toda a visualização ativa de ${state.filteredRows.length} registros).`;
+                }
+            }
+
+            // ATUALIZAÇÃO DOS KPIS COM PROTEÇÃO ANTI-ESTOURO
+            function updateKPIs() {
+                const rows = getActiveCalculationRows();
+                const total = rows.length;
+                let sumValue = 0;
+                let authorizedCount = 0;
+                let pendingCount = 0;
+                let sigaCount = 0;
+                let contractedCount = 0;
+
+                rows.forEach(r => {
+                    sumValue += (r._numValorTotal || 0);
+
+                    const statusSol = String(r['STATUS DA SOLICITAÇÃO'] || '').trim().toUpperCase();
+                    if (statusSol.includes("AUTORIZADO")) authorizedCount++;
+                    if (statusSol.includes("AGUARD")) pendingCount++;
+
+                    const procSiga = String(r['Nº PROCESSO SIGA'] || '').trim();
+                    if (procSiga !== "" && procSiga !== "_" && procSiga !== "NÃO INSERIDO") sigaCount++;
+
+                    const statusFin = String(r['STATUS FINAL'] || '').trim().toUpperCase();
+                    if (statusFin.includes("CONTRATADO") || statusFin.includes("FINALIZADO") || statusFin.includes("ASSINADO")) contractedCount++;
+                });
+
+                const avg = total > 0 ? sumValue / total : 0;
+                const isManualSelection = state.selectedRowKeys.size > 0;
+                const subContext = isManualSelection ? `Selecionados: ${total}` : `Filtrados: ${total} de ${state.normalizedRows.length}`;
+
+                document.getElementById('kpiTotalProcesses').innerText = total;
+                document.getElementById('kpiFilteredProcessesSub').innerText = subContext;
+                
+                document.getElementById('kpiTotalValue').innerText = formatCurrencyBRL(sumValue);
+                document.getElementById('filteredValueSum').innerText = formatCurrencyBRL(sumValue);
+                document.getElementById('kpiAvgValueSub').innerText = `Média: ${formatCurrencyBRL(avg)}`;
+                
+                document.getElementById('kpiAuthorizedCount').innerText = authorizedCount;
+                document.getElementById('kpiAuthorizedPct').innerText = total > 0 ? `${((authorizedCount / total) * 100).toFixed(1)}% do grupo` : "0%";
+                
+                document.getElementById('kpiPendingCount').innerText = pendingCount;
+                document.getElementById('kpiPendingPct').innerText = total > 0 ? `${((pendingCount / total) * 100).toFixed(1)}% do grupo` : "0%";
+                
+                document.getElementById('kpiSigaCount').innerText = sigaCount;
+                document.getElementById('kpiSigaPct').innerText = total > 0 ? `${((sigaCount / total) * 100).toFixed(1)}% do grupo` : "0%";
+                
+                document.getElementById('kpiContractedCount').innerText = contractedCount;
+                document.getElementById('kpiContractedPct').innerText = total > 0 ? `${((contractedCount / total) * 100).toFixed(1)}% do grupo` : "0%";
+            }
+
+            // ATUALIZAÇÃO DOS GRÁFICOS
+            function updateCharts() {
+                const rows = getActiveCalculationRows();
+
+                // 1. Modalidade
+                const modalidadeCounts = {};
+                rows.forEach(r => {
+                    const m = String(r['MODALIDADE'] || 'Não Informado').trim();
+                    modalidadeCounts[m] = (modalidadeCounts[m] || 0) + 1;
+                });
+                renderBarChart('chartModalidade', Object.keys(modalidadeCounts), Object.values(modalidadeCounts), 'Processos', '#003366');
+
+                // 2. Fonte
+                const fonteSums = {};
+                rows.forEach(r => {
+                    const f = String(r['FONTE'] || 'Não Informado').trim();
+                    fonteSums[f] = (fonteSums[f] || 0) + (r._numValorTotal || 0);
+                });
+                renderDoughnutChart('chartFonte', Object.keys(fonteSums), Object.values(fonteSums));
+
+                // 3. Localização
+                const locCounts = {};
+                rows.forEach(r => {
+                    const l = String(r['LOCALIZAÇÃO ATUAL'] || 'Não Informado').trim();
+                    locCounts[l] = (locCounts[l] || 0) + 1;
+                });
+                const sortedLocs = Object.entries(locCounts).sort((a,b) => b[1] - a[1]).slice(0, 8);
+                renderBarChart('chartLocalizacao', sortedLocs.map(i => i[0]), sortedLocs.map(i => i[1]), 'Processos', '#1e5a96');
+
+                // 4. Status
+                const statusCounts = {};
+                rows.forEach(r => {
+                    const s = String(r['STATUS DA SOLICITAÇÃO'] || 'Não Informado').trim();
+                    statusCounts[s] = (statusCounts[s] || 0) + 1;
+                });
+                renderPieChart('chartStatus', Object.keys(statusCounts), Object.values(statusCounts));
+            }
+
+            function renderBarChart(canvasId, labels, data, datasetLabel, color) {
+                if (state.charts[canvasId]) state.charts[canvasId].destroy();
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                state.charts[canvasId] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: datasetLabel,
+                            data: data,
+                            backgroundColor: color,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { precision: 0 } },
+                            x: { ticks: { font: { size: 10 } } }
+                        }
+                    }
+                });
+            }
+
+            function renderDoughnutChart(canvasId, labels, data) {
+                if (state.charts[canvasId]) state.charts[canvasId].destroy();
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                state.charts[canvasId] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: ['#003366', '#28a745', '#ffc107', '#17a2b8', '#6f42c1', '#fd7e14']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(item) {
+                                        return `${item.label}: ${formatCurrencyBRL(item.raw)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderPieChart(canvasId, labels, data) {
+                if (state.charts[canvasId]) state.charts[canvasId].destroy();
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                state.charts[canvasId] = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                        }
+                    }
+                });
+            }
+
+            // TABELA COM CHECKBOXES INDIVIDUAIS
+            function renderTable() {
+                const thead = document.getElementById('dataTableHead');
+                const tbody = document.getElementById('dataTableBody');
+
+                const allFilteredSelected = state.filteredRows.length > 0 && state.filteredRows.every(r => state.selectedRowKeys.has(r._sheetRowNum));
+
+                // Montagem do cabeçalho
+                let trHead = "<tr>";
+                trHead += `<th class="chk-col"><input type="checkbox" class="custom-checkbox" id="selectAllCheckbox" onchange="window.app.toggleSelectAllCheckbox(this.checked);" ${allFilteredSelected ? 'checked' : ''} /></th>`;
+                state.headers.forEach(h => {
+                    trHead += `<th class="sortable" onclick="window.app.sortTable('${escapeHtml(h)}');">${escapeHtml(h)} <i class="fa-solid fa-sort" style="opacity:0.4;"></i></th>`;
+                });
+                trHead += "</tr>";
+                thead.innerHTML = trHead;
+
+                // Ordenação
+                let sorted = [...state.filteredRows];
+                if (state.pagination.sortColumn) {
+                    const col = state.pagination.sortColumn;
+                    const dir = state.pagination.sortDirection === 'asc' ? 1 : -1;
+                    sorted.sort((a, b) => {
+                        let va = a[col] ?? '';
+                        let vb = b[col] ?? '';
+                        if (col === "VALOR TOTAL") {
+                            va = a._numValorTotal || 0;
+                            vb = b._numValorTotal || 0;
+                        }
+                        if (va < vb) return -1 * dir;
+                        if (va > vb) return 1 * dir;
+                        return 0;
+                    });
+                }
+
+                // Paginação
+                const totalRecords = sorted.length;
+                let rpp = state.pagination.recordsPerPage;
+                let page = state.pagination.currentPage;
+
+                let pageRows = sorted;
+                let totalPages = 1;
+
+                if (rpp !== 'all') {
+                    rpp = parseInt(rpp, 10);
+                    totalPages = Math.ceil(totalRecords / rpp) || 1;
+                    if (page > totalPages) page = totalPages;
+                    state.pagination.currentPage = page;
+
+                    const start = (page - 1) * rpp;
+                    const end = start + rpp;
+                    pageRows = sorted.slice(start, end);
+                }
+
+                if (pageRows.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="${state.headers.length + 1}" style="text-align:center; padding:25px; color:var(--text-muted);">Nenhum processo localizado com os filtros aplicados.</td></tr>`;
+                } else {
+                    let rowsHtml = "";
+                    pageRows.forEach(row => {
+                        const isSelected = state.selectedRowKeys.has(row._sheetRowNum);
+                        rowsHtml += `<tr class="${isSelected ? 'row-selected' : ''}">`;
+                        
+                        // Checkbox individual
+                        rowsHtml += `<td class="chk-col"><input type="checkbox" class="custom-checkbox" ${isSelected ? 'checked' : ''} onchange="window.app.toggleRowSelection(${row._sheetRowNum});" /></td>`;
+
+                        // Colunas
+                        state.headers.forEach(h => {
+                            const val = row[h];
+                            let formatted = formatDisplayCell(h, val, row);
+                            const isNum = (h === "VALOR TOTAL");
+                            rowsHtml += `<td class="${isNum ? 'num-cell' : ''}" onclick="window.app.openProcessDetail(${row._sheetRowNum});" title="${escapeHtml(String(val ?? ''))}">${formatted}</td>`;
+                        });
+                        rowsHtml += `</tr>`;
+                    });
+                    tbody.innerHTML = rowsHtml;
+                }
+
+                const startNum = totalRecords === 0 ? 0 : (rpp === 'all' ? 1 : (page - 1) * rpp + 1);
+                const endNum = rpp === 'all' ? totalRecords : Math.min(page * rpp, totalRecords);
+                document.getElementById('paginationInfo').innerText = `Mostrando ${startNum} a ${endNum} de ${totalRecords} registros (Selecionados: ${state.selectedRowKeys.size})`;
+
+                renderPaginationButtons(totalPages, page);
+            }
+
+            function renderPaginationButtons(totalPages, currentPage) {
+                const container = document.getElementById('paginationButtons');
+                if (totalPages <= 1) {
+                    container.innerHTML = "";
+                    return;
+                }
+
+                let html = `<button onclick="window.app.goToPage(${currentPage - 1});" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>`;
+                
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+
+                for (let p = startPage; p <= endPage; p++) {
+                    html += `<button class="${p === currentPage ? 'active' : ''}" onclick="window.app.goToPage(${p});">${p}</button>`;
+                }
+
+                html += `<button onclick="window.app.goToPage(${currentPage + 1});" ${currentPage === totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>`;
+                container.innerHTML = html;
+            }
+
+            function goToPage(page) {
+                state.pagination.currentPage = page;
+                renderTable();
+            }
+
+            function setRecordsPerPage(val) {
+                state.pagination.recordsPerPage = val;
+                state.pagination.currentPage = 1;
+                renderTable();
+            }
+
+            function sortTable(headerName) {
+                if (state.pagination.sortColumn === headerName) {
+                    state.pagination.sortDirection = state.pagination.sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.pagination.sortColumn = headerName;
+                    state.pagination.sortDirection = 'asc';
+                }
+                renderTable();
+            }
+
+            function handleTableSearch(val) {
+                window.debouncedSearch(val);
+            }
+
+            // MODAL DETALHES
+            function openProcessDetail(sheetRowNum) {
+                const row = state.normalizedRows.find(r => r._sheetRowNum === sheetRowNum);
+                if (!row) return;
+
+                const container = document.getElementById('processDetailsContainer');
+                let html = "";
+
+                state.headers.forEach(h => {
+                    const rawVal = row[h];
+                    let displayVal = formatDisplayCell(h, rawVal, row, true);
+                    html += `
+                        <div class="record-detail-row">
+                            <div class="detail-key">${escapeHtml(h)}:</div>
+                            <div class="detail-val">${displayVal}</div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+                openModal('modalProcessDetail');
+            }
+
+            function openValidationModal() {
+                const log = state.validationLog;
+                document.getElementById('valStatusText').innerText = log.status.toUpperCase();
+                document.getElementById('valTotalCells').innerText = log.totalCells.toLocaleString('pt-BR');
+                document.getElementById('valErrorCount').innerText = log.errors.length;
+
+                const tbody = document.getElementById('valErrorsTableBody');
+                if (log.errors.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:15px; color:var(--success-color); font-weight:bold;"><i class="fa-solid fa-check-circle"></i> Todos os dados estão perfeitamente consistentes com os tipos esperados.</td></tr>`;
+                } else {
+                    let trs = "";
+                    log.errors.forEach(err => {
+                        trs += `
+                            <tr>
+                                <td>${err.line}</td>
+                                <td>${err.colLetter}</td>
+                                <td><strong>${escapeHtml(err.header)}</strong></td>
+                                <td><code>${err.cell}</code></td>
+                                <td style="color:var(--danger-color); font-weight:bold;">${escapeHtml(err.val)}</td>
+                                <td>${escapeHtml(err.expected)}</td>
+                                <td>${escapeHtml(err.problem)}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = trs;
+                }
+
+                openModal('modalValidation');
+            }
+
+            function openModal(id) {
+                document.getElementById(id).classList.add('open');
+            }
+
+            function closeModal(id) {
+                document.getElementById(id).classList.remove('open');
+            }
+
+            // EXPORTAÇÃO XLSX NO MESMO FORMATO ORIGINAL QUE PERMITE REIMPORTAR
+            function exportToXLSX() {
+                const rowsToExport = getActiveCalculationRows();
+                if (rowsToExport.length === 0) {
+                    alert("Não há registros selecionados ou filtrados para exportação.");
+                    return;
+                }
+
+                // Cria matriz respeitando rigorosamente as 3 primeiras linhas originais
+                // Linha 1: Vazia
+                // Linha 2: Título institucional
+                // Linha 3: Subtítulos de tramitação
+                // Linha 4: As 14 colunas originais
+                // Linha 5+: Dados
+                const aoa = [];
+                aoa.push([]); // Linha 1
+                
+                const row2 = new Array(14).fill(null);
+                row2[0] = "LEVANTAMENTO DE PROCESSOS EM PROCEDIMENTO LICITATÓRIOS E DE CONTRATAÇÃO DA UEMA/2026";
+                aoa.push(row2); // Linha 2
+
+                const row3 = new Array(14).fill(null);
+                row3[1] = "TRAMITAÇÃO SEI";
+                row3[8] = "TRAMITAÇÃO SIGA E STARTGOV";
+                aoa.push(row3); // Linha 3
+
+                // Linha 4: Cabeçalhos oficiais
+                aoa.push([...OFFICIAL_COLUMNS]);
+
+                // Linhas 5+: Registros
+                rowsToExport.forEach(r => {
+                    const rowData = [];
+                    OFFICIAL_COLUMNS.forEach(colName => {
+                        let val = r[colName];
+                        if (colName === "VALOR TOTAL" && r._numValorTotal) {
+                            val = r._numValorTotal;
+                        }
+                        rowData.push(val !== undefined ? val : null);
+                    });
+                    aoa.push(rowData);
+                });
+
+                // Cria o workbook com a aba exatamente com nome "SIGA 2026"
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+                XLSX.utils.book_append_sheet(wb, ws, TARGET_SHEET_NAME);
+
+                const fileName = `Processos_SIGA_2026_Exportado_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+            }
+
+            // EXPORTAÇÃO PDF OFICIAL VIA jsPDF + AutoTable
+            function exportToPDF() {
+                const rowsToExport = getActiveCalculationRows();
+                if (rowsToExport.length === 0) {
+                    alert("Não há registros selecionados ou filtrados para exportação.");
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'pt',
+                    format: 'a4'
+                });
+
+                // Cabeçalho UEMA
+                doc.setFillColor(0, 51, 102);
+                doc.rect(0, 0, 842, 54, 'F');
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(13);
+                doc.setFont('helvetica', 'bold');
+                doc.text("UNIVERSIDADE ESTADUAL DO MARANHÃO - UEMA", 30, 24);
+                
+                doc.setFontSize(8.5);
+                doc.setFont('helvetica', 'normal');
+                doc.text("Pró-Reitoria de Planejamento e Administração | Painel de Processos Licitatórios - SIGA 2026", 30, 40);
+
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR');
+                doc.text(`Exportado em: ${dateStr}`, 690, 40);
+
+                // Métricas do Relatório
+                let totalVal = 0;
+                rowsToExport.forEach(d => totalVal += (d._numValorTotal || 0));
+
+                doc.setTextColor(15, 23, 42);
+                doc.setFontSize(8.5);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Total de Processos: ${rowsToExport.length}`, 30, 72);
+                doc.text(`Montante Financeiro Total: ${formatCurrencyBRL(totalVal)}`, 200, 72);
+                doc.setFont('helvetica', 'normal');
+                const isSelection = state.selectedRowKeys.size > 0;
+                doc.text(`* Relatório gerado a partir de ${isSelection ? 'seleção manual de processos' : 'filtros ativos em tela'}.`, 480, 72);
+
+                const tableHeaders = [
+                    ["ANO/Nº", "PROCESSO SEI", "MODALIDADE", "RESUMO DO OBJETO", "VALOR TOTAL", "FONTE", "STATUS SOLICITAÇÃO", "DT AUTORIZAÇÃO", "PROCESSO SIGA", "LOCALIZAÇÃO ATUAL", "STATUS FINAL"]
+                ];
+
+                const tableBody = rowsToExport.map(item => [
+                    item['ANO/NUMERO'] || '',
+                    String(item['Nº PROCESSO SEI'] || ''),
+                    item['MODALIDADE'] || '',
+                    item['RESUMO DO OBJETO'] || '',
+                    formatCurrencyBRL(item._numValorTotal || 0),
+                    item['FONTE'] || '',
+                    item['STATUS DA SOLICITAÇÃO'] || '',
+                    item._dateAutorizacao ? formatDateBRL(item._dateAutorizacao) : String(item['DATA DA AUTORIZAÇÃO'] || ''),
+                    item['Nº PROCESSO SIGA'] || '',
+                    item['LOCALIZAÇÃO ATUAL'] || '',
+                    item['STATUS FINAL'] || 'EM TRAMITAÇÃO'
+                ]);
+
+                doc.autoTable({
+                    head: tableHeaders,
+                    body: tableBody,
+                    startY: 85,
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 6.5,
+                        cellPadding: 3,
+                        textColor: [30, 41, 59],
+                        overflow: 'linebreak'
+                    },
+                    headStyles: {
+                        fillColor: [0, 51, 102],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'left'
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 50 },
+                        1: { cellWidth: 65 },
+                        2: { cellWidth: 65 },
+                        3: { cellWidth: 195 },
+                        4: { cellWidth: 65, halign: 'right' },
+                        5: { cellWidth: 55 },
+                        6: { cellWidth: 60 },
+                        7: { cellWidth: 50 },
+                        8: { cellWidth: 65 },
+                        9: { cellWidth: 65 },
+                        10: { cellWidth: 60 }
+                    },
+                    didDrawPage: function(data) {
+                        doc.setFontSize(7);
+                        doc.setTextColor(100, 116, 139);
+                        doc.text(
+                            `Página ${doc.internal.getNumberOfPages()}`,
+                            data.settings.margin.left,
+                            doc.internal.pageSize.height - 12
+                        );
+                    }
+                });
+
+                doc.save(`Relatorio_Processos_SIGA_2026_${now.toISOString().slice(0, 10)}.pdf`);
+            }
+
+            // IMPRESSÃO NATIVA
+            function printReport() {
+                const rowsToPrint = getActiveCalculationRows();
+                const thead = document.getElementById('printReportThead');
+                const tbody = document.getElementById('printReportTbody');
+                const summaryBox = document.getElementById('printReportSummary');
+                const meta = document.getElementById('printReportMeta');
+
+                meta.innerText = `Gerado em: ${new Date().toLocaleString('pt-BR')} | Base: ${state.currentFileName} | Aba: ${TARGET_SHEET_NAME}`;
+
+                let sum = 0;
+                rowsToPrint.forEach(r => sum += (r._numValorTotal || 0));
+
+                summaryBox.innerHTML = `
+                    <div class="item"><strong>Processos:</strong> ${rowsToPrint.length} de ${state.normalizedRows.length}</div>
+                    <div class="item"><strong>Montante Total:</strong> ${formatCurrencyBRL(sum)}</div>
+                    <div class="item"><strong>Filtros Ativos:</strong> ${document.getElementById('activeFilterBadgeCount').innerText}</div>
+                    <div class="item"><strong>Seleção Manual:</strong> ${state.selectedRowKeys.size > 0 ? 'Sim (' + state.selectedRowKeys.size + ')' : 'Não'}</div>
+                `;
+
+                const printCols = [
+                    'Nº PROCESSO SEI', 'MODALIDADE', 'RESUMO DO OBJETO', 'VALOR TOTAL',
+                    'FONTE', 'STATUS DA SOLICITAÇÃO', 'LOCALIZAÇÃO ATUAL', 'STATUS FINAL'
+                ];
+
+                let ths = "<tr>";
+                printCols.forEach(c => ths += `<th>${escapeHtml(c)}</th>`);
+                ths += "</tr>";
+                thead.innerHTML = ths;
+
+                let trs = "";
+                rowsToPrint.forEach(r => {
+                    trs += "<tr>";
+                    printCols.forEach(c => {
+                        const val = r[c];
+                        trs += `<td>${formatDisplayCell(c, val, r)}</td>`;
+                    });
+                    trs += "</tr>";
+                });
+                tbody.innerHTML = trs;
+
+                window.print();
+            }
+
+            // FORMATAÇÕES E HELPERS
+            function formatDisplayCell(headerName, rawVal, rowObj) {
+                if (rawVal === null || rawVal === undefined || String(rawVal).trim() === "") {
+                    return `<span style="color:#adb5bd; font-style:italic;">-</span>`;
+                }
+
+                if (headerName === "VALOR TOTAL") {
+                    if (rowObj && rowObj._numValorTotal !== undefined) {
+                        return formatCurrencyBRL(rowObj._numValorTotal);
+                    }
+                    if (typeof rawVal === 'number') return formatCurrencyBRL(rawVal);
+                    return escapeHtml(String(rawVal));
+                }
+
+                if (headerName === "DATA DA AUTORIZAÇÃO" || headerName === "DATA DE AUTUAÇÃO") {
+                    const parsed = parseCellDate(rawVal);
+                    if (parsed) return formatDateBRL(parsed);
+                    return `<span style="color:var(--danger-color); font-weight:bold;">${escapeHtml(String(rawVal))}</span>`;
+                }
+
+                if (headerName === "Nº PROCESSO SEI" || headerName === "Nº PROCESSO SIGA") {
+                    return `<strong>${escapeHtml(String(rawVal))}</strong>`;
+                }
+
+                return escapeHtml(String(rawVal));
+            }
+
+            function parseCellDate(val) {
+                if (!val) return null;
+                if (val instanceof Date && !isNaN(val)) return val;
+
+                if (typeof val === 'number') {
+                    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+                    const dateObj = new Date(excelEpoch.getTime() + val * 86400000);
+                    return !isNaN(dateObj) ? dateObj : null;
+                }
+
+                if (typeof val === 'string') {
+                    const clean = val.trim();
+                    if (/^\d{4}-\d{2}-\d{2}/.test(clean)) {
+                        const d = new Date(clean);
+                        return !isNaN(d) ? d : null;
+                    }
+                    const parts = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+                    if (parts) {
+                        const day = parseInt(parts[1], 10);
+                        const month = parseInt(parts[2], 10) - 1;
+                        const year = parseInt(parts[3], 10);
+                        const d = new Date(year, month, day);
+                        return !isNaN(d) ? d : null;
+                    }
+                }
+
+                return null;
+            }
+
+            function formatDateBRL(date) {
+                if (!(date instanceof Date) || isNaN(date)) return "";
+                const d = String(date.getDate()).padStart(2, '0');
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const y = date.getFullYear();
+                return `${d}/${m}/${y}`;
+            }
+
+            function formatCurrencyBRL(num) {
+                if (typeof num !== 'number' || isNaN(num)) num = 0;
+                return num.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            function getExcelColumnLetter(colIndex) {
+                let letter = "";
+                let temp = colIndex;
+                while (temp >= 0) {
+                    letter = String.fromCharCode((temp % 26) + 65) + letter;
+                    temp = Math.floor(temp / 26) - 1;
+                }
+                return letter;
+            }
+
+            function sanitizeId(str) {
+                return String(str).replace(/[^a-zA-Z0-9_]/g, '_');
+            }
+
+            function escapeHtml(str) {
+                return String(str)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function updateMetaDisplay(file, sheet, records, columns, status) {
+                document.getElementById('metaFileName').innerText = file;
+                document.getElementById('metaSheetName').innerText = sheet;
+                document.getElementById('metaLastImport').innerText = new Date().toLocaleTimeString('pt-BR');
+                document.getElementById('metaRecordCount').innerText = records;
+                document.getElementById('metaColumnCount').innerText = columns;
+
+                const badge = document.getElementById('importStatusBadge');
+                badge.className = `status-badge ${status}`;
+                if (status === 'valid') {
+                    badge.innerHTML = `<i class="fa-solid fa-check"></i> BASE VÁLIDA`;
+                } else if (status === 'error') {
+                    badge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> INCONFORMIDADES DETECTADAS (${state.validationLog.errors.length})`;
+                } else {
+                    badge.innerHTML = `<i class="fa-solid fa-clock"></i> AGUARDANDO IMPORTAÇÃO`;
+                }
+            }
+
+            return {
+                init,
+                handleRangeFilter,
+                clearAllFilters,
+                applyFilters,
+                setRecordsPerPage,
+                goToPage,
+                sortTable,
+                handleTableSearch,
+                openProcessDetail,
+                openValidationModal,
+                closeModal,
+                exportToXLSX,
+                exportToPDF,
+                printReport,
+                toggleRowSelection,
+                selectAllFiltered,
+                clearSelection,
+                toggleSelectAllCheckbox
+            };
+        })();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.app.init();
+        });
+    </script>
+</body>
+</html>
