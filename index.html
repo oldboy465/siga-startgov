@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Acompanhamento de Processos - SIGA 2026 | UEMA</title>
+    <title>Painel de Gestão de Processos - SIGA / StartGov | UEMA</title>
     
-    <!-- SheetJS (xlsx) para leitura e escrita nativa de planilhas Excel -->
+    <!-- Bibliotecas Externas Essenciais via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Chart.js para gráficos interativos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- jsPDF e jsPDF-AutoTable para geração e exportação nativa de relatórios em PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-    <!-- Font Awesome para ícones -->
+    <!-- Ícones Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
@@ -22,6 +20,8 @@
             --uema-light-blue: #1e5a96;
             --uema-accent: #d9534f;
             --uema-gold: #c59b27;
+            --whatsapp-green: #25d366;
+            --whatsapp-dark: #128c7e;
             --bg-body: #f4f6f9;
             --bg-card: #ffffff;
             --text-main: #2b303a;
@@ -31,8 +31,9 @@
             --warning-color: #ffc107;
             --danger-color: #dc3545;
             --info-color: #17a2b8;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
             --radius: 6px;
         }
 
@@ -51,11 +52,11 @@
             flex-direction: column;
         }
 
-        /* Header Institucional UEMA */
+        /* CABEÇALHO INSTITUCIONAL */
         header.institutional-header {
             background: linear-gradient(135deg, var(--uema-dark-blue) 0%, var(--uema-blue) 100%);
             color: #ffffff;
-            padding: 16px 28px;
+            padding: 14px 24px;
             box-shadow: var(--shadow-md);
             border-bottom: 3px solid var(--uema-gold);
         }
@@ -65,48 +66,48 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 14px;
         }
 
         .header-title-box h1 {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
         .header-title-box .subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.9;
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
-        .header-title-box .badge-siga {
+        .badge-siga {
             background-color: var(--uema-gold);
             color: #000;
             font-weight: 700;
-            font-size: 0.75rem;
-            padding: 2px 8px;
+            font-size: 0.72rem;
+            padding: 2px 7px;
             border-radius: 4px;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
-        /* Botões */
+        /* BOTÕES */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            padding: 8px 14px;
-            font-size: 0.84rem;
+            gap: 6px;
+            padding: 7px 12px;
+            font-size: 0.82rem;
             font-weight: 600;
             border-radius: var(--radius);
             border: 1px solid transparent;
@@ -116,14 +117,17 @@
             white-space: nowrap;
         }
 
-        .btn-primary { background-color: #2b78c5; color: #fff; border-color: #20609e; }
-        .btn-primary:hover { background-color: #1a5690; }
-
+        .btn-primary { background-color: #20609e; color: #fff; border-color: #174d80; }
+        .btn-primary:hover { background-color: #164673; }
+        
         .btn-success { background-color: #218838; color: #fff; border-color: #1e7e34; }
         .btn-success:hover { background-color: #19692c; }
+        
+        .btn-whatsapp { background-color: var(--whatsapp-green); color: #ffffff; border-color: #1eb956; }
+        .btn-whatsapp:hover { background-color: var(--whatsapp-dark); color: #ffffff; }
 
-        .btn-warning { background-color: #e0a800; color: #212529; border-color: #d39e00; }
-        .btn-warning:hover { background-color: #c69500; }
+        .btn-warning { background-color: var(--uema-gold); color: #212529; border-color: #b58e23; }
+        .btn-warning:hover { background-color: #ab851e; color: #fff; }
 
         .btn-danger { background-color: #c82333; color: #fff; border-color: #bd2130; }
         .btn-danger:hover { background-color: #a71d2a; }
@@ -131,29 +135,85 @@
         .btn-light { background-color: #ffffff; color: var(--uema-dark-blue); border-color: var(--border-color); }
         .btn-light:hover { background-color: #e9ecef; }
 
-        .btn-outline { background-color: transparent; color: #ffffff; border-color: rgba(255,255,255,0.4); }
-        .btn-outline:hover { background-color: rgba(255,255,255,0.15); border-color: #fff; }
+        .btn-sm { padding: 5px 9px; font-size: 0.76rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Container Principal */
+        /* NAVEGAÇÃO SPA POR ABAS */
+        nav.app-nav {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: none;
+            background: transparent;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover { color: var(--uema-blue); }
+        .nav-tab.active {
+            color: var(--uema-blue);
+            border-bottom-color: var(--uema-blue);
+            background: #f8fafc;
+        }
+
+        /* CONTAINER PRINCIPAL */
         main.app-container {
-            padding: 22px 28px;
+            padding: 18px 24px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
         }
 
-        /* Cartão Base */
+        /* METADADOS DA IMPORTAÇÃO */
+        .meta-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--uema-blue);
+            padding: 12px 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            font-size: 0.84rem;
+        }
+
+        .meta-items {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-items strong {
+            color: var(--uema-dark-blue);
+        }
+
+        /* CARDS E CONTAINERS */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            overflow: hidden;
         }
 
         .card-header {
-            padding: 12px 18px;
+            padding: 12px 16px;
             background-color: #ffffff;
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -164,7 +224,7 @@
         }
 
         .card-header h2 {
-            font-size: 1.05rem;
+            font-size: 0.98rem;
             color: var(--uema-dark-blue);
             font-weight: 700;
             display: flex;
@@ -173,121 +233,256 @@
         }
 
         .card-body {
-            padding: 18px;
+            padding: 16px;
         }
 
-        /* Banner de Espera / Empty State Inicial */
-        .empty-state {
-            background: #ffffff;
-            border: 2px dashed var(--border-color);
-            border-radius: 10px;
-            padding: 50px 24px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
+        /* PAINEL DE FILTROS COM MÚLTIPLA SELEÇÃO NA TABELA */
+        .table-filter-section {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            transition: all 0.3s ease;
         }
 
-        .empty-state i {
-            font-size: 3.5rem;
-            color: var(--uema-light-blue);
-            margin-bottom: 15px;
-        }
-
-        .empty-state h3 {
-            font-size: 1.3rem;
-            color: var(--uema-dark-blue);
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto 20px auto;
-            line-height: 1.5;
-        }
-
-        /* Metadados e Status de Importação */
-        .import-banner {
+        .table-filter-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
-            background: #ffffff;
-            border-left: 4px solid var(--uema-blue);
-            padding: 14px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .file-meta-info {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            font-size: 0.85rem;
-            color: var(--text-main);
-        }
-
-        .file-meta-item strong {
-            color: var(--uema-dark-blue);
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+        .table-filter-title {
+            font-size: 0.84rem;
             font-weight: 700;
-            text-transform: uppercase;
+            color: var(--uema-dark-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .status-badge.loaded { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .status-badge.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .status-badge.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .status-badge.empty { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .active-filter-pill {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid #bae6fd;
+        }
 
-        /* KPIs / Cards com Alinhamento Fiel e Proteção contra Estouro */
+        .active-filter-pill.has-filters {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        .table-filters-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 10px;
+        }
+
+        /* ESTILO DOS BOTÕES E DROPDOWNS DE MÚLTIPLA SELEÇÃO */
+        .multi-filter-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .multi-filter-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--uema-dark-blue);
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .multi-filter-btn {
+            width: 100%;
+            padding: 6px 10px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.78rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            gap: 6px;
+        }
+
+        .multi-filter-btn:hover {
+            border-color: var(--uema-light-blue);
+        }
+
+        .multi-filter-btn.is-filtered {
+            background: #eff6ff;
+            border-color: var(--uema-light-blue);
+            color: var(--uema-dark-blue);
+            font-weight: 700;
+        }
+
+        .multi-filter-btn .btn-text-col {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .multi-filter-btn .badge-count {
+            background: var(--uema-blue);
+            color: #ffffff;
+            font-size: 0.68rem;
+            padding: 1px 6px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .multi-filter-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 270px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+            padding: 8px;
+            margin-top: 2px;
+        }
+
+        .multi-filter-dropdown-menu.open {
+            display: block;
+        }
+
+        .multi-filter-search {
+            width: 100%;
+            padding: 5px 8px;
+            font-size: 0.76rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            margin-bottom: 6px;
+        }
+
+        .multi-filter-search:focus {
+            border-color: var(--uema-blue);
+        }
+
+        .multi-filter-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.72rem;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 4px;
+        }
+
+        .multi-filter-actions a {
+            color: var(--uema-blue);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .multi-filter-actions a:hover {
+            text-decoration: underline;
+        }
+
+        .multi-filter-list {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .multi-filter-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.76rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .multi-filter-item:hover {
+            background: #f1f5f9;
+        }
+
+        .multi-filter-item input[type="checkbox"] {
+            accent-color: var(--uema-blue);
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+        }
+
+        .multi-filter-item .item-label {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .multi-filter-item .item-count {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+
+        /* KPIS INDICADORES */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
         }
 
         .kpi-card {
             background: #ffffff;
             border-radius: var(--radius);
             border: 1px solid var(--border-color);
-            padding: 14px 16px;
+            padding: 12px 14px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             box-shadow: var(--shadow-sm);
             border-left: 4px solid var(--uema-blue);
-            min-width: 0; /* Previne estouro no flex */
+            min-width: 0;
             overflow: hidden;
         }
 
         .kpi-icon {
-            width: 46px;
-            height: 46px;
+            width: 44px;
+            height: 44px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             background: #eef4fb;
             color: var(--uema-blue);
-            flex-shrink: 0; /* Nunca encolhe o ícone */
+            flex-shrink: 0;
         }
 
         .kpi-data {
             flex: 1;
-            min-width: 0; /* Previne overflow */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            min-width: 0;
         }
 
         .kpi-title {
@@ -295,185 +490,69 @@
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .kpi-value {
-            font-size: clamp(1.05rem, 1.2vw, 1.35rem);
+            font-size: clamp(1.1rem, 1.3vw, 1.35rem);
             font-weight: 800;
             color: var(--uema-dark-blue);
             margin-top: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.2;
         }
 
-        .kpi-subtext {
+        .kpi-sub {
             font-size: 0.72rem;
             color: var(--text-muted);
-            margin-top: 3px;
+            margin-top: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* Barra de Seleção Ativa */
-        .selection-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #eef5fc;
-            border: 1px solid #c9def5;
-            padding: 10px 16px;
-            border-radius: var(--radius);
-            font-size: 0.85rem;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .selection-toolbar strong {
-            color: var(--uema-dark-blue);
-        }
-
-        /* Seção de Filtros */
-        .filter-controls-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .active-filters-info {
-            font-size: 0.84rem;
-            color: var(--uema-dark-blue);
-            font-weight: 600;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .filter-group label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--uema-dark-blue);
-            text-transform: uppercase;
-        }
-
-        .filter-group input, 
-        .filter-group select {
-            padding: 7px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            font-size: 0.82rem;
-            color: var(--text-main);
-            background-color: #ffffff;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .filter-group input:focus, 
-        .filter-group select:focus {
-            border-color: var(--uema-light-blue);
-            box-shadow: 0 0 0 2px rgba(30, 90, 150, 0.15);
-        }
-
-        .filter-range {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .filter-range input {
-            width: 100%;
-        }
-
-        /* Gráficos */
+        /* GRÁFICOS */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 16px;
         }
 
         .chart-box {
             background: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            padding: 14px;
+            padding: 12px;
             box-shadow: var(--shadow-sm);
-            display: flex;
-            flex-direction: column;
         }
 
-        .chart-box-title {
-            font-size: 0.85rem;
+        .chart-title {
+            font-size: 0.84rem;
             font-weight: 700;
             color: var(--uema-dark-blue);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding-bottom: 6px;
-            border-bottom: 1px solid #edf0f2;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
-        .chart-container-wrapper {
+        .chart-wrapper {
             position: relative;
-            flex: 1;
-            min-height: 250px;
-            max-height: 280px;
+            height: 250px;
         }
 
-        /* Tabela de Dados e Barra de Ferramentas */
+        /* TABELA DE DADOS COM CABEÇALHO ESCURO DE ALTO CONTRASTE */
         .table-toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .table-search-box {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            max-width: 380px;
-        }
-
-        .table-search-box input {
-            width: 100%;
-            padding: 7px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            font-size: 0.82rem;
-        }
-
-        .table-actions-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .table-responsive {
@@ -482,50 +561,63 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
             max-height: 520px;
+            background: #ffffff;
         }
 
         table.siga-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
+            font-size: 0.79rem;
             text-align: left;
             white-space: nowrap;
         }
 
+        /* CABEÇALHO FIXO COM VISIBILIDADE TOTAL (NÃO APAGA NO HOVER) */
         table.siga-table thead {
-            background-color: var(--uema-blue);
-            color: #ffffff;
+            background-color: var(--uema-dark-blue) !important;
             position: sticky;
             top: 0;
-            z-index: 2;
+            z-index: 5;
+        }
+
+        table.siga-table thead tr {
+            background-color: var(--uema-dark-blue) !important;
         }
 
         table.siga-table th {
+            background-color: var(--uema-blue) !important;
+            color: #ffffff !important;
             padding: 9px 12px;
-            font-weight: 600;
-            font-size: 0.75rem;
+            font-weight: 700;
+            font-size: 0.74rem;
             letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
             user-select: none;
-            border-right: 1px solid rgba(255,255,255,0.12);
-        }
-
-        table.siga-table th.sortable {
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
-        table.siga-table th.sortable:hover {
-            background-color: var(--uema-light-blue);
+        table.siga-table th:hover {
+            background-color: var(--uema-light-blue) !important;
+            color: #ffffff !important;
         }
 
-        table.siga-table th.chk-col,
-        table.siga-table td.chk-col {
-            width: 40px;
+        table.siga-table th.drag-over {
+            background-color: var(--uema-gold) !important;
+            color: #000000 !important;
+        }
+
+        table.siga-table th.col-actions,
+        table.siga-table td.col-actions {
+            width: 44px;
             text-align: center;
-            padding: 8px;
+            padding: 6px;
+            cursor: default;
         }
 
         table.siga-table td {
-            padding: 8px 12px;
+            padding: 7px 10px;
             border-bottom: 1px solid #edf0f2;
             border-right: 1px solid #f1f3f5;
             color: var(--text-main);
@@ -534,16 +626,8 @@
             text-overflow: ellipsis;
         }
 
-        table.siga-table tbody tr {
-            transition: background-color 0.15s;
-        }
-
         table.siga-table tbody tr:hover {
             background-color: #f1f6fc;
-        }
-
-        table.siga-table tbody tr.row-selected {
-            background-color: #eaf3fd !important;
         }
 
         table.siga-table td.num-cell {
@@ -552,57 +636,80 @@
             font-weight: 600;
         }
 
-        /* Checkbox customizado */
-        input.custom-checkbox {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: var(--uema-blue);
+        table.siga-table td.date-cell {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--uema-dark-blue);
         }
 
-        /* Paginação */
-        .pagination-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 4px 0 4px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-            gap: 10px;
+        table.siga-table td.editable-cell {
+            cursor: cell;
         }
 
-        .pagination-btns {
-            display: flex;
-            gap: 4px;
+        table.siga-table td.editable-cell:hover {
+            background-color: #e3effd;
+            box-shadow: inset 0 0 0 1px #90caf9;
         }
 
-        .pagination-btns button {
-            padding: 4px 10px;
-            border: 1px solid var(--border-color);
+        .cell-input-edit {
+            width: 100%;
+            padding: 4px 6px;
+            font-size: 0.78rem;
+            border: 1px solid var(--uema-blue);
+            border-radius: 3px;
+            outline: none;
             background: #ffffff;
+        }
+
+        /* LISTA SUSPENSA DE COLUNAS VISÍVEIS */
+        .column-dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .column-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 50;
+            padding: 10px;
+        }
+
+        .column-dropdown-menu.open {
+            display: block;
+        }
+
+        .column-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            font-size: 0.8rem;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.8rem;
         }
 
-        .pagination-btns button.active {
-            background: var(--uema-blue);
-            color: #ffffff;
-            border-color: var(--uema-blue);
+        .column-dropdown-item:hover {
+            background-color: #f0f6ff;
         }
 
-        .pagination-btns button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* Modais */
+        /* MODAIS */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.55);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
             display: none;
             justify-content: center;
             align-items: center;
@@ -610,7 +717,9 @@
             padding: 16px;
         }
 
-        .modal-overlay.open { display: flex; }
+        .modal-overlay.open {
+            display: flex;
+        }
 
         .modal-box {
             background: #ffffff;
@@ -620,17 +729,11 @@
             max-height: 88vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-            animation: modalFadeIn 0.2s ease-out;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-15px); }
-            to { opacity: 1; transform: translateY(0); }
+            box-shadow: var(--shadow-lg);
         }
 
         .modal-header {
-            padding: 14px 20px;
+            padding: 12px 18px;
             background: var(--uema-blue);
             color: #ffffff;
             display: flex;
@@ -640,31 +743,16 @@
             border-top-right-radius: var(--radius);
         }
 
-        .modal-header h3 {
-            font-size: 1.05rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-size: 1.25rem;
-            cursor: pointer;
-        }
-
         .modal-body {
-            padding: 20px;
+            padding: 18px;
             overflow-y: auto;
             flex: 1;
         }
 
         .modal-footer {
-            padding: 10px 20px;
-            border-top: 1px solid var(--border-color);
+            padding: 10px 18px;
             background: #f8f9fa;
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: flex-end;
             gap: 8px;
@@ -672,81 +760,69 @@
             border-bottom-right-radius: var(--radius);
         }
 
-        .record-details-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
+        /* PRÉ-VISUALIZAÇÃO DA PLANILHA NO MODAL */
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.74rem;
+            margin-top: 12px;
         }
 
-        .record-detail-row {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            background: #fbfcfd;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 0.84rem;
+        .preview-table th, 
+        .preview-table td {
+            border: 1px solid #dce2e6;
+            padding: 5px 8px;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .record-detail-row .detail-key {
+        .row-ignored {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .row-header {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+            font-weight: bold;
+        }
+
+        .row-data {
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+        /* TOAST DE NOTIFICAÇÃO (COPIADO PARA O WHATSAPP) */
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #25d366;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            font-size: 0.88rem;
             font-weight: 700;
-            color: var(--uema-dark-blue);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: toastSlideUp 0.3s ease-out;
         }
 
-        .record-detail-row .detail-val {
-            word-break: break-word;
-            color: var(--text-main);
+        @keyframes toastSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Área de Impressão Nativa (A4 Paisagem) */
-        #printable-report-area { display: none; }
-
-        @media print {
-            body { background: #ffffff !important; color: #000000 !important; }
-            header.institutional-header, main.app-container, footer.institutional-footer, .modal-overlay { display: none !important; }
-            #printable-report-area {
-                display: block !important;
-                padding: 10mm;
-                background: #ffffff;
-                color: #000000;
-            }
-            .report-header-print {
-                border-bottom: 2px solid #003366;
-                padding-bottom: 10px;
-                margin-bottom: 15px;
-            }
-            .report-header-print h1 { font-size: 15pt; color: #003366; text-transform: uppercase; margin-bottom: 3px; }
-            .report-header-print .meta { font-size: 8.5pt; color: #444; }
-            .report-summary-box {
-                margin: 12px 0;
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-                border: 1px solid #ccc;
-                padding: 8px;
-                background: #f9f9f9;
-            }
-            .report-summary-box .item { font-size: 8.5pt; }
-            .report-table-print {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 10px;
-                font-size: 7.5pt;
-            }
-            .report-table-print th, .report-table-print td {
-                border: 1px solid #444;
-                padding: 4px 6px;
-                text-align: left;
-            }
-            .report-table-print th { background: #eee; font-weight: bold; }
-            @page { size: A4 landscape; margin: 8mm; }
-        }
-
-        footer.institutional-footer {
+        footer {
             background: #ffffff;
             border-top: 1px solid var(--border-color);
-            padding: 14px 28px;
-            font-size: 0.78rem;
+            padding: 10px 24px;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-align: center;
             margin-top: auto;
@@ -761,10 +837,10 @@
             <div class="header-title-box">
                 <h1>Painel de Acompanhamento de Processos</h1>
                 <div class="subtitle">
-                    <span class="badge-siga">SIGA 2026</span>
+                    <span class="badge-siga">SIGA & STARTGOV</span>
                     <span>Universidade Estadual do Maranhão - UEMA</span>
                     <span style="opacity:0.6;">|</span>
-                    <span style="font-size: 0.8rem; opacity: 0.85;">Gestão Dinâmica &bull; PROPLAD / CSL / CCONV</span>
+                    <span style="font-size: 0.78rem;">Gestão de Licitações e Orçamento</span>
                 </div>
             </div>
 
@@ -772,117 +848,88 @@
                 <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" />
                 
                 <button class="btn btn-warning" onclick="document.getElementById('excelFileInput').click();">
-                    <i class="fa-solid fa-file-excel"></i> IMPORTAR EXCEL (.XLSX)
+                    <i class="fa-solid fa-file-excel"></i> IMPORTAR EXCEL
                 </button>
 
-                <button class="btn btn-success" id="btnExportXlsx" onclick="window.app.exportToXLSX();" disabled title="Exporta dados filtrados no formato original">
+                <button class="btn btn-whatsapp" id="btnCopyWhatsapp" onclick="window.app.copyToWhatsApp();" disabled title="Copiar processos filtrados no formato WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> COPIAR WHATSAPP
+                </button>
+
+                <button class="btn btn-success" id="btnExportXlsx" onclick="window.app.exportToXLSX();" disabled>
                     <i class="fa-solid fa-file-arrow-down"></i> EXPORTAR XLSX
                 </button>
 
-                <button class="btn btn-danger" id="btnExportPdf" onclick="window.app.exportToPDF();" disabled title="Exporta dados filtrados em documento PDF oficial">
+                <button class="btn btn-danger" id="btnExportPdf" onclick="window.app.exportToPDF();" disabled>
                     <i class="fa-solid fa-file-pdf"></i> EXPORTAR PDF
                 </button>
 
-                <button class="btn btn-light" id="btnShowErrors" onclick="window.app.openValidationModal();">
-                    <i class="fa-solid fa-triangle-exclamation"></i> VER ERROS (<span id="errorBadgeCount">0</span>)
-                </button>
-
-                <button class="btn btn-outline" onclick="window.app.printReport();" title="Imprimir relatório">
-                    <i class="fa-solid fa-print"></i> IMPRIMIR
+                <button class="btn btn-light" id="btnErrors" onclick="window.app.openValidationModal();">
+                    <i class="fa-solid fa-triangle-exclamation"></i> ERROS (<span id="countErrors">0</span>)
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- CONTAINER PRINCIPAL -->
+    <!-- NAVEGAÇÃO DE ABAS SPA -->
+    <nav class="app-nav">
+        <button class="nav-tab active" data-tab="tab-dashboard" onclick="window.app.switchTab('tab-dashboard');">
+            <i class="fa-solid fa-chart-pie"></i> Indicadores & Gráficos
+        </button>
+        <button class="nav-tab" data-tab="tab-table" onclick="window.app.switchTab('tab-table');">
+            <i class="fa-solid fa-table"></i> Tabela Analítica & Edição
+        </button>
+        <button class="nav-tab" data-tab="tab-columns" onclick="window.app.switchTab('tab-columns');">
+            <i class="fa-solid fa-sliders"></i> Gerenciar Colunas & Filtros
+        </button>
+    </nav>
+
+    <!-- CONTAINER DA APLICAÇÃO -->
     <main class="app-container">
 
-        <!-- Banner com Metadados e Status -->
-        <div class="import-banner">
-            <div class="file-meta-info">
-                <div class="file-meta-item">
-                    <span>Arquivo:</span>
-                    <strong id="metaFileName">Nenhum arquivo importado</strong>
-                </div>
-                <div class="file-meta-item">
-                    <span>Aba Processada:</span>
-                    <strong id="metaSheetName">-</strong>
-                </div>
-                <div class="file-meta-item">
-                    <span>Última Importação:</span>
-                    <strong id="metaLastImport">-</strong>
-                </div>
-                <div class="file-meta-item">
-                    <span>Total de Processos:</span>
-                    <strong id="metaRecordCount">0</strong>
-                </div>
-                <div class="file-meta-item">
-                    <span>Colunas Estruturais:</span>
-                    <strong id="metaColumnCount">0</strong>
-                </div>
+        <!-- Banner com Metadados da Base Importada -->
+        <div class="meta-banner">
+            <div class="meta-items">
+                <div>Arquivo: <strong id="metaFileName">Nenhum arquivo</strong></div>
+                <div>Planilha Ativa: <strong id="metaSheetName">-</strong></div>
+                <div>Linhas Ignoradas: <strong id="metaIgnoredRows">0</strong></div>
+                <div>Registros Processados: <strong id="metaRowCount">0</strong></div>
+                <div>Colunas Ativas: <strong id="metaColCount">0</strong></div>
             </div>
-
-            <div id="importStatusBadge" class="status-badge empty">
-                <i class="fa-solid fa-clock"></i> AGUARDANDO IMPORTAÇÃO
+            <div>
+                <button class="btn btn-light" id="btnReopenConfig" onclick="window.app.reopenSheetModal();" style="display:none;">
+                    <i class="fa-solid fa-gear"></i> Configurar Importação
+                </button>
             </div>
         </div>
 
-        <!-- Estado Inicial Vazio (Sem Dados Pré-Cadastrados) -->
-        <div class="empty-state" id="emptyStateBox">
-            <i class="fa-solid fa-folder-open"></i>
-            <h3>Nenhum Arquivo Carregado</h3>
-            <p>Baixe a planilha Excel (<code>Processos SIGA atual.xlsx</code>) e clique no botão <strong>"IMPORTAR EXCEL (.XLSX)"</strong> acima. O sistema processará automaticamente a aba <strong>SIGA 2026</strong> ignorando as 3 primeiras linhas não estruturadas, mantendo todas as colunas oficiais e auditando datas e valores.</p>
-            <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click();">
-                <i class="fa-solid fa-arrow-up-from-bracket"></i> SELECIONAR PLANILHA AGORA
-            </button>
-        </div>
-
-        <!-- Seções que aparecem somente após carregar os dados -->
-        <div id="dashboardMainContent" style="display: none; flex-direction: column; gap: 20px;">
-
-            <!-- Barra de Seleção Ativa com Caixa de Seleção -->
-            <div class="selection-toolbar">
-                <div>
-                    <i class="fa-solid fa-list-check" style="color:var(--uema-blue); margin-right: 6px;"></i>
-                    <span>Modo de Seleção: </span>
-                    <strong id="selectionCounterText">Nenhum processo selecionado individualmente (cálculos sobre toda a visualização ativa).</strong>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-light" style="padding: 5px 10px; font-size: 0.78rem;" onclick="window.app.selectAllFiltered();">
-                        <i class="fa-solid fa-check-double"></i> Selecionar Todos Filtrados
-                    </button>
-                    <button class="btn btn-light" style="padding: 5px 10px; font-size: 0.78rem;" onclick="window.app.clearSelection();">
-                        <i class="fa-solid fa-xmark"></i> Desmarcar Todos
-                    </button>
-                </div>
-            </div>
-
-            <!-- KPIs com Alinhamento Estrito anti-estouro -->
+        <!-- ABA 1: INDICADORES & GRÁFICOS (DASHBOARD) -->
+        <div id="tab-dashboard" class="tab-pane" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- KPIs -->
             <section class="kpi-grid">
-                <div class="kpi-card" style="border-left-color: #003366;">
-                    <div class="kpi-icon"><i class="fa-solid fa-folder-open"></i></div>
+                <div class="kpi-card" style="border-left-color: var(--uema-blue);">
+                    <div class="kpi-icon"><i class="fa-solid fa-folder-tree"></i></div>
                     <div class="kpi-data">
                         <div class="kpi-title">Processos Ativos</div>
-                        <div class="kpi-value" id="kpiTotalProcesses">0</div>
-                        <div class="kpi-subtext" id="kpiFilteredProcessesSub">Total na base: 0</div>
+                        <div class="kpi-value" id="kpiCount">0</div>
+                        <div class="kpi-sub" id="kpiCountSub">Total na base: 0</div>
                     </div>
                 </div>
 
                 <div class="kpi-card" style="border-left-color: #28a745;">
                     <div class="kpi-icon" style="color: #28a745; background: #eaf6ec;"><i class="fa-solid fa-money-bill-wave"></i></div>
                     <div class="kpi-data">
-                        <div class="kpi-title">Montante Financeiro Total</div>
-                        <div class="kpi-value" id="kpiTotalValue">R$ 0,00</div>
-                        <div class="kpi-subtext" id="kpiAvgValueSub">Média: R$ 0,00</div>
+                        <div class="kpi-title">Montante Total</div>
+                        <div class="kpi-value" id="kpiSum">R$ 0,00</div>
+                        <div class="kpi-sub" id="kpiAvg">Média: R$ 0,00</div>
                     </div>
                 </div>
 
                 <div class="kpi-card" style="border-left-color: #17a2b8;">
                     <div class="kpi-icon" style="color: #17a2b8; background: #e8f7f9;"><i class="fa-solid fa-circle-check"></i></div>
                     <div class="kpi-data">
-                        <div class="kpi-title">Processos Autorizados</div>
-                        <div class="kpi-value" id="kpiAuthorizedCount">0</div>
-                        <div class="kpi-subtext" id="kpiAuthorizedPct">0% do total ativo</div>
+                        <div class="kpi-title">Autorizados</div>
+                        <div class="kpi-value" id="kpiAuth">0</div>
+                        <div class="kpi-sub" id="kpiAuthPct">0% do total</div>
                     </div>
                 </div>
 
@@ -890,8 +937,8 @@
                     <div class="kpi-icon" style="color: #d39e00; background: #fdfae7;"><i class="fa-solid fa-clock-rotate-left"></i></div>
                     <div class="kpi-data">
                         <div class="kpi-title">Aguard. Autorização</div>
-                        <div class="kpi-value" id="kpiPendingCount">0</div>
-                        <div class="kpi-subtext" id="kpiPendingPct">0% do total ativo</div>
+                        <div class="kpi-value" id="kpiPending">0</div>
+                        <div class="kpi-sub" id="kpiPendingPct">0% do total</div>
                     </div>
                 </div>
 
@@ -899,8 +946,8 @@
                     <div class="kpi-icon" style="color: #6f42c1; background: #f3effa;"><i class="fa-solid fa-network-wired"></i></div>
                     <div class="kpi-data">
                         <div class="kpi-title">Cadastrados no SIGA</div>
-                        <div class="kpi-value" id="kpiSigaCount">0</div>
-                        <div class="kpi-subtext" id="kpiSigaPct">Com nº de processo</div>
+                        <div class="kpi-value" id="kpiSiga">0</div>
+                        <div class="kpi-sub" id="kpiSigaPct">Com nº de processo</div>
                     </div>
                 </div>
 
@@ -908,108 +955,76 @@
                     <div class="kpi-icon" style="color: #20c997; background: #eafaf5;"><i class="fa-solid fa-file-contract"></i></div>
                     <div class="kpi-data">
                         <div class="kpi-title">Contratados / Assinados</div>
-                        <div class="kpi-value" id="kpiContractedCount">0</div>
-                        <div class="kpi-subtext" id="kpiContractedPct">Status Final</div>
+                        <div class="kpi-value" id="kpiContracted">0</div>
+                        <div class="kpi-sub" id="kpiContractedPct">0% do total</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Painel Dinâmico de Filtros -->
+            <!-- Gráficos Gerenciais -->
+            <section class="charts-grid">
+                <div class="chart-box">
+                    <div class="chart-title">Processos por Modalidade de Contratação</div>
+                    <div class="chart-wrapper"><canvas id="chartModalidade"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">Valor Total por Fonte de Recursos</div>
+                    <div class="chart-wrapper"><canvas id="chartFonte"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">Top 8 Localizações Atuais</div>
+                    <div class="chart-wrapper"><canvas id="chartLocalizacao"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">Status da Solicitação</div>
+                    <div class="chart-wrapper"><canvas id="chartStatus"></canvas></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ABA 2: TABELA ANALÍTICA & EDIÇÃO COM FILTROS DE MÚLTIPLA SELEÇÃO NATIVOS -->
+        <div id="tab-table" class="tab-pane" style="display: none; flex-direction: column; gap: 14px;">
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-filter"></i> Filtros de Pesquisa e Refinamento</h2>
+                    <h2><i class="fa-solid fa-table-cells"></i> Registros Tabulares (Dê duplo clique para editar células)</h2>
                     <div style="display:flex; gap: 8px;">
-                        <button class="btn btn-light" onclick="window.app.clearAllFilters();">
-                            <i class="fa-solid fa-filter-circle-xmark"></i> LIMPAR FILTROS
+                        <button class="btn btn-whatsapp" onclick="window.app.copyToWhatsApp();" title="Copiar para o WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i> Copiar WhatsApp
+                        </button>
+                        <button class="btn btn-primary" onclick="window.app.addNewRow();">
+                            <i class="fa-solid fa-plus"></i> Adicionar Processo
+                        </button>
+                        <button class="btn btn-light" onclick="window.app.addNewColumn();">
+                            <i class="fa-solid fa-table-columns"></i> Adicionar Coluna
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="filter-controls-header">
-                        <div class="active-filters-info">
-                            <span>Filtros ativos: <strong id="activeFilterBadgeCount">0</strong></span>
-                            <span>Itens filtrados: <strong id="filteredCountInfo">0 de 0</strong></span>
-                            <span>Valor total filtrado: <strong id="filteredValueSum">R$ 0,00</strong></span>
-                        </div>
-                    </div>
-
-                    <div class="filters-grid" id="dynamicFiltersContainer"></div>
-                </div>
-            </section>
-
-            <!-- Painel de Gráficos -->
-            <section class="card">
-                <div class="card-header">
-                    <h2><i class="fa-solid fa-chart-pie"></i> Visualizações Gerenciais</h2>
-                </div>
-                <div class="card-body">
-                    <div class="charts-grid">
-                        <div class="chart-box">
-                            <div class="chart-box-title">
-                                <span>Processos por Modalidade</span>
-                                <i class="fa-solid fa-chart-column text-muted"></i>
-                            </div>
-                            <div class="chart-container-wrapper">
-                                <canvas id="chartModalidade"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="chart-box">
-                            <div class="chart-box-title">
-                                <span>Valor Total por Fonte</span>
-                                <i class="fa-solid fa-chart-pie text-muted"></i>
-                            </div>
-                            <div class="chart-container-wrapper">
-                                <canvas id="chartFonte"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="chart-box">
-                            <div class="chart-box-title">
-                                <span>Top 8 Localizações Atuais</span>
-                                <i class="fa-solid fa-building-columns text-muted"></i>
-                            </div>
-                            <div class="chart-container-wrapper">
-                                <canvas id="chartLocalizacao"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="chart-box">
-                            <div class="chart-box-title">
-                                <span>Status da Solicitação</span>
-                                <i class="fa-solid fa-bars-progress text-muted"></i>
-                            </div>
-                            <div class="chart-container-wrapper">
-                                <canvas id="chartStatus"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Tabela Completa de Registros Tabulares com Checkbox -->
-            <section class="card">
-                <div class="card-header">
-                    <h2><i class="fa-solid fa-table"></i> Base Analítica de Processos (Aba SIGA 2026)</h2>
-                    <div style="display:flex; gap: 8px;">
-                        <button class="btn btn-success" onclick="window.app.exportToXLSX();">
-                            <i class="fa-solid fa-file-excel"></i> Exportar XLSX
-                        </button>
-                        <button class="btn btn-danger" onclick="window.app.exportToPDF();">
-                            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
+                    
+                    <!-- BARRA SUPERIOR DA TABELA: PESQUISA, SELETOR DE COLUNAS E PAGINAÇÃO -->
                     <div class="table-toolbar">
-                        <div class="table-search-box">
-                            <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i>
-                            <input type="text" id="globalTableSearch" placeholder="Pesquisar em todas as colunas..." oninput="window.app.handleTableSearch(this.value);" />
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="text" id="tableGlobalSearch" placeholder="Pesquisar em toda a tabela..." oninput="window.app.handleSearch(this.value);" style="padding:6px 10px; border:1px solid var(--border-color); border-radius:var(--radius); font-size:0.82rem; width:280px;" />
+                            
+                            <!-- SELETOR SUSPENSO DE COLUNAS VISÍVEIS -->
+                            <div class="column-dropdown-container">
+                                <button class="btn btn-light" onclick="window.app.toggleColumnDropdown();">
+                                    <i class="fa-solid fa-list-check"></i> Colunas Visíveis (<span id="visibleColsCountBadge">0</span>) <i class="fa-solid fa-chevron-down" style="font-size:0.7rem; margin-left:4px;"></i>
+                                </button>
+                                <div class="column-dropdown-menu" id="columnDropdownMenu">
+                                    <input type="text" id="searchColInput" placeholder="Procurar coluna..." oninput="window.app.filterColumnList(this.value);" style="width:100%; padding:5px 8px; font-size:0.78rem; border:1px solid var(--border-color); border-radius:4px; margin-bottom:8px;" />
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
+                                        <a href="javascript:void(0)" onclick="window.app.selectAllColumns(true);" style="color:var(--uema-blue); font-weight:600;">Marcar Todas</a>
+                                        <a href="javascript:void(0)" onclick="window.app.selectAllColumns(false);" style="color:var(--danger-color); font-weight:600;">Desmarcar Todas</a>
+                                    </div>
+                                    <div id="columnDropdownItemsList"></div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="table-actions-right">
-                            <span style="font-size:0.82rem; color:var(--text-muted);">Por página:</span>
-                            <select id="recordsPerPageSelect" onchange="window.app.setRecordsPerPage(this.value);" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color);">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Por página:</span>
+                            <select id="recordsPerPage" onchange="window.app.setRecordsPerPage(this.value);" style="padding:4px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem;">
                                 <option value="15">15</option>
                                 <option value="30" selected>30</option>
                                 <option value="50">50</option>
@@ -1019,51 +1034,132 @@
                         </div>
                     </div>
 
+                    <!-- PAINEL DINÂMICO DE FILTROS COM CAIXA DE MÚLTIPLA SELEÇÃO NESTA PÁGINA -->
+                    <div class="table-filter-section" id="tableFilterSection">
+                        <div class="table-filter-header">
+                            <div class="table-filter-title">
+                                <i class="fa-solid fa-filter"></i>
+                                <span>Filtros Dinâmicos da Tabela (Múltipla Seleção):</span>
+                                <span class="active-filter-pill" id="activeFiltersBadge">Nenhum filtro ativo</span>
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <button class="btn btn-light btn-sm" onclick="window.app.clearAllFilters();">
+                                    <i class="fa-solid fa-filter-circle-xmark"></i> Limpar Todos os Filtros
+                                </button>
+                                <button class="btn btn-light btn-sm" id="btnToggleFilterCollapse" onclick="window.app.toggleFilterCollapse();" title="Recolher / Expandir Filtros">
+                                    <i class="fa-solid fa-chevron-up" id="filterCollapseIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-filters-container" id="tableDynamicMultiFilters">
+                            <p style="color:var(--text-muted); font-size:0.8rem;">Importe uma planilha para gerar filtros automáticos com múltipla seleção.</p>
+                        </div>
+                    </div>
+
+                    <!-- TABELA ANALÍTICA PRINCIPAL -->
                     <div class="table-responsive">
-                        <table class="siga-table" id="dataTableProcessos">
-                            <thead id="dataTableHead"></thead>
-                            <tbody id="dataTableBody"></tbody>
+                        <table class="siga-table" id="mainDataTable">
+                            <thead id="mainTableHead"></thead>
+                            <tbody id="mainTableBody"></tbody>
                         </table>
                     </div>
 
-                    <div class="pagination-footer">
-                        <div id="paginationInfo">Mostrando 0 de 0 registros</div>
-                        <div class="pagination-btns" id="paginationButtons"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:0.8rem; color:var(--text-muted);">
+                        <div id="paginationSummary">Mostrando 0 de 0 registros</div>
+                        <div id="paginationNav" style="display:flex; gap:4px;"></div>
                     </div>
                 </div>
             </section>
-
         </div>
+
+        <!-- ABA 3: GERENCIAR COLUNAS & FILTROS -->
+        <div id="tab-columns" class="tab-pane" style="display: none; flex-direction: column; gap: 14px;">
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-sliders"></i> Gerenciador de Colunas e Filtros</h2>
+                </div>
+                <div class="card-body">
+                    <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">
+                        Toda coluna marcada comporá automaticamente um filtro dinâmico de múltipla seleção na página da tabela analítica.
+                    </p>
+
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
+                        <label style="font-size:0.84rem; font-weight:bold;">Adicionar Coluna Rápida pelo Nome:</label>
+                        <select id="columnPickerSelect" onchange="window.app.handleColumnPicker(this.value);" style="padding:7px 12px; border-radius:var(--radius); border:1px solid var(--border-color); font-size:0.82rem; min-width:280px;">
+                            <option value="">-- Escolha uma coluna para ativar --</option>
+                        </select>
+                    </div>
+
+                    <div id="activeColumnsChips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                </div>
+            </section>
+        </div>
+
     </main>
 
-    <!-- MODAL DE ERROS DE VALIDAÇÃO -->
+    <!-- MODAL DE SELEÇÃO DE PLANILHA COM OPÇÃO "IGNORAR PRIMEIRAS N LINHAS" -->
+    <div class="modal-overlay" id="modalSheetSelector">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-excel"></i> Configurar Importação de Planilha</h3>
+                <button onclick="window.app.closeModal('modalSheetSelector');" style="background:none; border:none; color:#fff; font-size:1.3rem; cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:700; color:var(--uema-dark-blue); text-transform:uppercase;">1. Escolha a Planilha (Aba):</label>
+                        <select id="sheetSelectDropdown" onchange="window.app.handleModalSheetChange(this.value);" style="width:100%; padding:8px; border-radius:4px; border:1px solid var(--border-color); font-size:0.84rem; margin-top:4px;"></select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:700; color:var(--uema-dark-blue); text-transform:uppercase;">2. Ignorar as primeiras N linhas:</label>
+                        <input type="number" id="inputIgnoreRows" min="0" value="3" oninput="window.app.updateSheetPreview();" style="width:100%; padding:8px; border-radius:4px; border:1px solid var(--border-color); font-size:0.84rem; margin-top:4px;" />
+                    </div>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:4px; padding:10px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.78rem; font-weight:bold; color:var(--uema-dark-blue);"><i class="fa-solid fa-eye"></i> Pré-visualização da Planilha (Linhas 1 a 10):</span>
+                        <span style="font-size:0.72rem; color:var(--text-muted);">Clique em uma linha para defini-la como cabeçalho</span>
+                    </div>
+                    <div style="overflow-x:auto; max-height:220px; margin-top:8px;">
+                        <table class="preview-table" id="modalPreviewTable"></table>
+                    </div>
+                </div>
+
+                <div style="font-size:0.75rem; color:var(--text-muted); display:flex; gap:16px;">
+                    <span><span style="display:inline-block; width:12px; height:12px; background:#fee2e2; border:1px solid #f87171; vertical-align:middle;"></span> Linhas Ignoradas</span>
+                    <span><span style="display:inline-block; width:12px; height:12px; background:#dbeafe; border:1px solid #60a5fa; vertical-align:middle;"></span> Linha do Cabeçalho</span>
+                    <span><span style="display:inline-block; width:12px; height:12px; background:#f0fdf4; border:1px solid #4ade80; vertical-align:middle;"></span> Linhas de Dados</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" onclick="window.app.closeModal('modalSheetSelector');">Cancelar</button>
+                <button class="btn btn-success" onclick="window.app.confirmSheetImport();">
+                    <i class="fa-solid fa-check"></i> Processar e Importar Planilha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE AUDITORIA DE ERROS -->
     <div class="modal-overlay" id="modalValidation">
         <div class="modal-box">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-shield-halved"></i> Auditoria de Inconsistências de Dados</h3>
-                <button class="modal-close" onclick="window.app.closeModal('modalValidation');">&times;</button>
+                <button onclick="window.app.closeModal('modalValidation');" style="background:none; border:none; color:#fff; font-size:1.3rem; cursor:pointer;">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="display:flex; justify-content:space-between; margin-bottom: 14px; background:#f8f9fa; padding:12px; border-radius:4px; font-size:0.85rem;">
-                    <div>Status: <strong id="valStatusText">-</strong></div>
-                    <div>Células Auditadas: <strong id="valTotalCells">-</strong></div>
-                    <div>Erros Detectados: <strong id="valErrorCount" style="color:var(--danger-color);">-</strong></div>
-                </div>
-
                 <div class="table-responsive" style="max-height: 400px;">
-                    <table class="siga-table" style="font-size: 0.78rem;">
+                    <table class="siga-table">
                         <thead>
-                            <tr style="background-color: var(--uema-dark-blue);">
-                                <th style="width: 50px;">Linha</th>
-                                <th style="width: 60px;">Coluna</th>
-                                <th>Campo</th>
-                                <th style="width: 70px;">Célula</th>
-                                <th>Valor Encontrado</th>
-                                <th>Tipo Esperado</th>
+                            <tr>
+                                <th style="width:60px;">Linha</th>
+                                <th>Coluna</th>
+                                <th>Valor Detectado</th>
                                 <th>Inconformidade</th>
                             </tr>
                         </thead>
-                        <tbody id="valErrorsTableBody"></tbody>
+                        <tbody id="valTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -1073,781 +1169,824 @@
         </div>
     </div>
 
-    <!-- MODAL DE FICHA DO PROCESSO -->
-    <div class="modal-overlay" id="modalProcessDetail">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-file-lines"></i> Ficha Completa do Processo</h3>
-                <button class="modal-close" onclick="window.app.closeModal('modalProcessDetail');">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="record-details-grid" id="processDetailsContainer"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-light" onclick="window.app.closeModal('modalProcessDetail');">Fechar</button>
-            </div>
-        </div>
+    <!-- NOTIFICAÇÃO TOAST WHATSAPP -->
+    <div class="toast-notification" id="whatsappToast">
+        <i class="fa-brands fa-whatsapp" style="font-size:1.3rem;"></i>
+        <span id="toastMsg">Copiado para o WhatsApp com sucesso!</span>
     </div>
 
-    <!-- ÁREA DE IMPRESSÃO (PRINT MEDIA) -->
-    <div id="printable-report-area">
-        <div class="report-header-print">
-            <h1>Universidade Estadual do Maranhão - UEMA</h1>
-            <div style="font-size: 11pt; font-weight: bold; color: #333;">Relatório Gerencial de Acompanhamento de Processos - SIGA 2026</div>
-            <div class="meta" id="printReportMeta"></div>
-        </div>
-
-        <div class="report-summary-box" id="printReportSummary"></div>
-
-        <table class="report-table-print">
-            <thead id="printReportThead"></thead>
-            <tbody id="printReportTbody"></tbody>
-        </table>
-    </div>
-
-    <footer class="institutional-footer">
-        Universidade Estadual do Maranhão - Pró-Reitoria de Planejamento e Administração | SIGA 2026 Dashboard Dinâmico
+    <footer>
+        Universidade Estadual do Maranhão - Pró-Reitoria de Planejamento e Administração | Painel SIGA & StartGov
     </footer>
 
-    <!-- MOTOR JAVASCRIPT REATIVO -->
+    <!-- SCRIPT DO MOTOR JAVASCRIPT REATIVO -->
     <script>
         window.app = (function() {
             'use strict';
 
-            const TARGET_SHEET_NAME = "SIGA 2026";
-            
-            // As 14 colunas originais oficiais
-            const OFFICIAL_COLUMNS = [
-                'ANO/NUMERO', 'Nº PROCESSO SEI', 'MODALIDADE', 'RESUMO DO OBJETO',
-                'VALOR TOTAL', 'FONTE', 'STATUS DA SOLICITAÇÃO', 'DATA DA AUTORIZAÇÃO',
-                'Nº PROCESSO SIGA', 'DATA DE AUTUAÇÃO', 'LOCALIZAÇÃO ATUAL',
-                'STATUS DE TRAMITAÇÃO', 'STATUS FINAL', 'OBSERVAÇÃO'
-            ];
-
-            // Estado da aplicação sem nenhum dado pré-cadastrado
             let state = {
-                rawWorkbook: null,
-                currentFileName: "",
-                headers: [],
-                rawRows: [],
-                normalizedRows: [],
-                filteredRows: [],
-                selectedRowKeys: new Set(), // Conjunto de chaves dos processos selecionados via checkbox
-                validationLog: {
-                    status: "empty",
-                    totalCells: 0,
-                    errors: []
-                },
+                workbook: null,
+                fileName: "",
+                currentSheet: "",
+                ignoredRowsCount: 3,
+                rawMatrix: [],
+                headers: [],                // Colunas ativas em ordem de exibição
+                allAvailableHeaders: [],    // Todas as colunas presentes na linha de cabeçalho
+                visibleHeaders: [],         // Colunas marcadas
+                rows: [],                   // Base completa de registros
+                filteredRows: [],           // Registros após aplicação dos filtros
+                errors: [],                 // Log de auditoria
                 filters: {
                     search: "",
-                    categorical: {},
-                    ranges: {
-                        valorMin: null,
-                        valorMax: null,
-                        dataAutIni: null,
-                        dataAutFim: null
-                    }
+                    multiSelect: {}         // key: colName, value: Set() de valores permitidos
                 },
-                pagination: {
-                    currentPage: 1,
-                    recordsPerPage: 30,
-                    sortColumn: null,
-                    sortDirection: 'asc'
-                },
-                charts: {}
+                charts: {},
+                pagination: { currentPage: 1, recordsPerPage: 30, sortCol: null, sortDir: 'asc' },
+                dragSrcColIdx: null
             };
 
             function init() {
-                const fileInput = document.getElementById('excelFileInput');
-                fileInput.addEventListener('change', handleFileSelection);
+                document.getElementById('excelFileInput').addEventListener('change', handleFileInput);
+                
+                // Fecha menus dropdown ao clicar fora
+                document.addEventListener('click', function(e) {
+                    const colDropdown = document.getElementById('columnDropdownMenu');
+                    const btnCol = e.target.closest('.column-dropdown-container');
+                    if (!btnCol && colDropdown && colDropdown.classList.contains('open')) {
+                        colDropdown.classList.remove('open');
+                    }
 
-                let debounceTimer;
-                window.debouncedSearch = function(val) {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => {
-                        state.filters.search = val.trim().toLowerCase();
-                        applyFilters();
-                    }, 250);
-                };
+                    if (!e.target.closest('.multi-filter-wrapper')) {
+                        document.querySelectorAll('.multi-filter-dropdown-menu.open').forEach(menu => {
+                            menu.classList.remove('open');
+                        });
+                    }
+                });
             }
 
-            function handleFileSelection(event) {
-                const file = event.target.files[0];
+            function handleFileInput(e) {
+                const file = e.target.files[0];
                 if (!file) return;
 
-                state.currentFileName = file.name;
+                state.fileName = file.name;
                 const reader = new FileReader();
 
-                reader.onload = function(e) {
+                reader.onload = function(evt) {
                     try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { 
-                            type: 'array', 
-                            cellDates: true, 
-                            raw: true 
-                        });
-                        state.rawWorkbook = workbook;
-                        processWorkbook(workbook, file.name);
+                        const data = new Uint8Array(evt.target.result);
+                        state.workbook = XLSX.read(data, { type: 'array', cellDates: true, raw: true });
+                        showConfigModal(state.workbook);
                     } catch (err) {
-                        alert("Erro ao ler arquivo Excel: " + err.message);
+                        alert("Erro ao ler planilha: " + err.message);
                     }
                 };
-
                 reader.readAsArrayBuffer(file);
             }
 
-            function processWorkbook(workbook, fileName) {
-                const sheetNames = workbook.SheetNames;
-                
-                let targetSheet = sheetNames.find(s => s.trim().toUpperCase() === TARGET_SHEET_NAME);
-                if (!targetSheet) {
-                    targetSheet = sheetNames.find(s => s.toUpperCase().includes("2026")) || sheetNames[0];
-                }
+            // MODAL CONFIGURADOR COM PREVIEW E SELETOR DE LINHAS IGNORADAS
+            function showConfigModal(workbook) {
+                const selectSheet = document.getElementById('sheetSelectDropdown');
+                selectSheet.innerHTML = "";
 
-                const worksheet = workbook.Sheets[targetSheet];
-                const rawSheetData = XLSX.utils.sheet_to_json(worksheet, { 
-                    header: 1, 
-                    defval: null, 
-                    raw: true 
+                workbook.SheetNames.forEach(sheetName => {
+                    const opt = document.createElement('option');
+                    opt.value = sheetName;
+                    opt.innerText = sheetName;
+                    selectSheet.appendChild(opt);
                 });
 
-                if (!rawSheetData || rawSheetData.length === 0) {
-                    alert(`A aba '${targetSheet}' está vazia.`);
-                    return;
-                }
+                const preferred = workbook.SheetNames.find(s => s.trim().toUpperCase() === "SIGA 2026") || workbook.SheetNames[0];
+                selectSheet.value = preferred;
 
-                // Identifica a linha de cabeçalho na linha 4 (índice 3) ou busca dinâmica
-                let headerRowIndex = -1;
-                for (let r = 0; r < Math.min(10, rawSheetData.length); r++) {
-                    const row = rawSheetData[r];
+                handleModalSheetChange(preferred);
+                openModal('modalSheetSelector');
+            }
+
+            function reopenSheetModal() {
+                if (state.workbook) {
+                    showConfigModal(state.workbook);
+                }
+            }
+
+            function handleModalSheetChange(sheetName) {
+                state.currentSheet = sheetName;
+                const worksheet = state.workbook.Sheets[sheetName];
+                state.rawMatrix = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null, raw: true });
+
+                let autoIgnore = 0;
+                for (let r = 0; r < Math.min(10, state.rawMatrix.length); r++) {
+                    const row = state.rawMatrix[r];
                     if (!row) continue;
-                    const rowStr = row.map(c => String(c || '').trim().toUpperCase());
-                    if (rowStr.includes("MODALIDADE") || rowStr.includes("RESUMO DO OBJETO") || rowStr.includes("Nº PROCESSO SEI")) {
-                        headerRowIndex = r;
+                    const filledCount = row.filter(c => c !== null && String(c).trim() !== "").length;
+                    const strRow = row.map(c => String(c || '').trim().toUpperCase());
+                    if (filledCount >= 3 && strRow.some(c => c.includes("PROCESSO") || c.includes("MODALIDADE") || c.includes("OBJETO"))) {
+                        autoIgnore = r;
                         break;
                     }
                 }
 
-                if (headerRowIndex === -1) headerRowIndex = 3;
+                document.getElementById('inputIgnoreRows').value = autoIgnore;
+                state.ignoredRowsCount = autoIgnore;
+                updateSheetPreview();
+            }
 
-                // Extração dos cabeçalhos originais (14 colunas oficiais)
-                const headerRow = rawSheetData[headerRowIndex];
-                const headers = [];
-                for (let c = 0; c < 14; c++) {
-                    const val = headerRow && headerRow[c] !== undefined && headerRow[c] !== null ? String(headerRow[c]).trim() : OFFICIAL_COLUMNS[c];
-                    headers.push(val);
+            function updateSheetPreview() {
+                const ignoreRows = parseInt(document.getElementById('inputIgnoreRows').value, 10) || 0;
+                state.ignoredRowsCount = ignoreRows;
+                const table = document.getElementById('modalPreviewTable');
+                table.innerHTML = "";
+
+                if (!state.rawMatrix || state.rawMatrix.length === 0) {
+                    table.innerHTML = "<tr><td>Planilha vazia</td></tr>";
+                    return;
                 }
 
-                // Extrai registros a partir da linha seguinte (linha 5 no Excel)
-                const rawRecords = [];
-                for (let r = headerRowIndex + 1; r < rawSheetData.length; r++) {
-                    const row = rawSheetData[r];
-                    if (!row) continue;
-                    const hasData = row.slice(0, 14).some(cell => cell !== null && cell !== undefined && String(cell).trim() !== "");
-                    if (hasData) {
-                        rawRecords.push({
-                            sheetRowNumber: r + 1,
-                            cells: row.slice(0, 14)
-                        });
+                const maxPreviewRows = Math.min(10, state.rawMatrix.length);
+                let html = "";
+
+                for (let r = 0; r < maxPreviewRows; r++) {
+                    const row = state.rawMatrix[r] || [];
+                    let rowClass = "row-data";
+                    let label = `Linha ${r + 1} (Dados)`;
+
+                    if (r < ignoreRows) {
+                        rowClass = "row-ignored";
+                        label = `Linha ${r + 1} [IGNORADA]`;
+                    } else if (r === ignoreRows) {
+                        rowClass = "row-header";
+                        label = `Linha ${r + 1} [CABEÇALHO]`;
                     }
+
+                    html += `<tr class="${rowClass}" onclick="window.app.setIgnoreRowsCount(${r});" style="cursor:pointer;" title="Clique para tornar esta linha o cabeçalho">`;
+                    html += `<td style="font-weight:bold; width:130px;">${label}</td>`;
+
+                    for (let c = 0; c < Math.min(8, Math.max(row.length, 6)); c++) {
+                        const cellVal = row[c] !== null && row[c] !== undefined ? String(row[c]) : "";
+                        html += `<td>${escapeHtml(cellVal)}</td>`;
+                    }
+                    html += `</tr>`;
                 }
 
-                state.headers = headers;
-                state.rawRows = rawRecords;
+                table.innerHTML = html;
+            }
 
-                // Auditoria e Validação Estrita
-                validateDataset(headers, rawRecords);
+            function setIgnoreRowsCount(lineIndex) {
+                document.getElementById('inputIgnoreRows').value = lineIndex;
+                updateSheetPreview();
+            }
 
-                // Normalização Interna (dados originais preservados)
-                normalizeData();
+            // CONFIRMAR IMPORTAÇÃO COM A LINHA DE CABEÇALHO SELECIONADA
+            function confirmSheetImport() {
+                const ignoreRows = parseInt(document.getElementById('inputIgnoreRows').value, 10) || 0;
+                closeModal('modalSheetSelector');
 
-                // Atualiza UI
-                updateMetaDisplay(fileName, targetSheet, rawRecords.length, headers.length, state.validationLog.status);
-                
-                document.getElementById('emptyStateBox').style.display = 'none';
-                document.getElementById('dashboardMainContent').style.display = 'flex';
+                const headerRow = state.rawMatrix[ignoreRows];
+                if (!headerRow || headerRow.length === 0) {
+                    alert("A linha de cabeçalho selecionada não possui dados.");
+                    return;
+                }
+
+                const headers = [];
+                for (let c = 0; c < headerRow.length; c++) {
+                    let colTitle = headerRow[c] !== null && headerRow[c] !== undefined ? String(headerRow[c]).trim() : "";
+                    if (colTitle === "") colTitle = `Coluna_${c + 1}`;
+                    headers.push(colTitle);
+                }
+
+                const records = [];
+                const errors = [];
+
+                for (let r = ignoreRows + 1; r < state.rawMatrix.length; r++) {
+                    const rowData = state.rawMatrix[r];
+                    if (!rowData || !rowData.some(cell => cell !== null && String(cell).trim() !== "")) continue;
+
+                    const rowObj = { _id: r + 1 };
+                    headers.forEach((h, colIndex) => {
+                        let val = rowData[colIndex];
+                        if (val === undefined || val === null) val = "";
+
+                        if (String(val).includes("#VALUE!") || String(val).includes("#NAME?") || String(val).includes("#REF!")) {
+                            errors.push({ line: r + 1, col: h, val: val, error: "Erro de fórmula na planilha de origem" });
+                        }
+
+                        if (h.toUpperCase().includes("VALOR")) {
+                            let num = 0;
+                            if (typeof val === 'number') num = val;
+                            else if (val) {
+                                const clean = String(val).replace(/[R$\s]/g, '').replace(',', '.');
+                                const parsed = parseFloat(clean);
+                                num = !isNaN(parsed) ? parsed : 0;
+                            }
+                            rowObj[`_num_${h}`] = num;
+                        }
+
+                        rowObj[h] = val;
+                    });
+                    records.push(rowObj);
+                }
+
+                state.headers = [...headers];
+                state.allAvailableHeaders = [...headers];
+                state.visibleHeaders = [...headers];
+                state.rows = records;
+                state.errors = errors;
+                state.filters.multiSelect = {};
+
+                // Atualiza Metadados
+                document.getElementById('metaFileName').innerText = state.fileName;
+                document.getElementById('metaSheetName').innerText = state.currentSheet;
+                document.getElementById('metaIgnoredRows').innerText = ignoreRows;
+                document.getElementById('metaRowCount').innerText = records.length;
+                document.getElementById('metaColCount').innerText = headers.length;
+                document.getElementById('countErrors').innerText = errors.length;
+                document.getElementById('btnReopenConfig').style.display = 'inline-flex';
+                document.getElementById('btnCopyWhatsapp').removeAttribute('disabled');
                 document.getElementById('btnExportXlsx').removeAttribute('disabled');
                 document.getElementById('btnExportPdf').removeAttribute('disabled');
 
-                buildDynamicFiltersUI();
-                state.selectedRowKeys.clear();
+                buildColumnDropdownList();
+                buildColumnPickerTab();
+                buildDynamicMultiFilters();
                 applyFilters();
             }
 
-            // Auditoria de inconsistências
-            function validateDataset(headers, records) {
-                const errors = [];
-                let totalCells = 0;
-
-                records.forEach(rec => {
-                    const rowNum = rec.sheetRowNumber;
-                    
-                    headers.forEach((headerName, colIdx) => {
-                        totalCells++;
-                        const cellVal = rec.cells[colIdx];
-                        const colLetter = getExcelColumnLetter(colIdx);
-                        const cellRef = `${colLetter}${rowNum}`;
-
-                        if (cellVal === null || cellVal === undefined || String(cellVal).trim() === "") return;
-
-                        // Erro de fórmula pré-existente
-                        if (String(cellVal).includes("#VALUE!") || String(cellVal).includes("#N/A") || String(cellVal).includes("#REF!")) {
-                            errors.push({
-                                line: rowNum,
-                                colLetter: colLetter,
-                                header: headerName,
-                                cell: cellRef,
-                                val: String(cellVal),
-                                expected: "Dado Válido",
-                                problem: "Fórmula com erro (" + cellVal + ") na planilha de origem."
-                            });
-                            return;
-                        }
-
-                        // Validação: VALOR TOTAL
-                        if (headerName === "VALOR TOTAL") {
-                            const str = String(cellVal).trim();
-                            if (str === "R$" || str === "R$ -" || str === "-" || str === "_") {
-                                errors.push({
-                                    line: rowNum,
-                                    colLetter: colLetter,
-                                    header: headerName,
-                                    cell: cellRef,
-                                    val: str,
-                                    expected: "Valor Monetário Numérico",
-                                    problem: "Texto inserido no lugar de valor numérico."
-                                });
-                            } else {
-                                const clean = str.replace(/[R$\s]/g, '').replace(',', '.');
-                                if (isNaN(parseFloat(clean))) {
-                                    errors.push({
-                                        line: rowNum,
-                                        colLetter: colLetter,
-                                        header: headerName,
-                                        cell: cellRef,
-                                        val: str,
-                                        expected: "Valor Numérico",
-                                        problem: "Incompatível com valor monetário."
-                                    });
-                                }
-                            }
-                        }
-
-                        // Validação: DATA DA AUTORIZAÇÃO / DATA DE AUTUAÇÃO
-                        if (headerName === "DATA DA AUTORIZAÇÃO" || headerName === "DATA DE AUTUAÇÃO") {
-                            const parsed = parseCellDate(cellVal);
-                            if (!parsed) {
-                                errors.push({
-                                    line: rowNum,
-                                    colLetter: colLetter,
-                                    header: headerName,
-                                    cell: cellRef,
-                                    val: String(cellVal),
-                                    expected: "Data (dd/mm/aaaa)",
-                                    problem: "Texto irregular ou datas múltiplas/compostas no campo."
-                                });
-                            }
-                        }
-                    });
-                });
-
-                state.validationLog.totalCells = totalCells;
-                state.validationLog.errors = errors;
-                state.validationLog.status = errors.length > 0 ? "error" : "valid";
-
-                const badge = document.getElementById('errorBadgeCount');
-                badge.innerText = errors.length;
-                if (errors.length > 0) {
-                    document.getElementById('btnShowErrors').classList.add('btn-danger');
-                    document.getElementById('btnShowErrors').classList.remove('btn-light');
-                } else {
-                    document.getElementById('btnShowErrors').classList.add('btn-light');
-                    document.getElementById('btnShowErrors').classList.remove('btn-danger');
-                }
+            // GESTÃO DE COLUNAS VISÍVEIS VIA LISTA SUSPENSA
+            function toggleColumnDropdown() {
+                const menu = document.getElementById('columnDropdownMenu');
+                menu.classList.toggle('open');
             }
 
-            function normalizeData() {
-                const headers = state.headers;
-                state.normalizedRows = state.rawRows.map(rec => {
-                    const rowObj = {
-                        _sheetRowNum: rec.sheetRowNumber,
-                        _rawCells: rec.cells
+            function buildColumnDropdownList() {
+                const container = document.getElementById('columnDropdownItemsList');
+                container.innerHTML = "";
+                document.getElementById('visibleColsCountBadge').innerText = `${state.visibleHeaders.length} de ${state.allAvailableHeaders.length}`;
+
+                state.allAvailableHeaders.forEach(col => {
+                    const item = document.createElement('div');
+                    item.className = "column-dropdown-item";
+
+                    const chk = document.createElement('input');
+                    chk.type = "checkbox";
+                    chk.checked = state.visibleHeaders.includes(col);
+                    chk.onchange = function() {
+                        toggleColumnVisibility(col, this.checked);
                     };
 
-                    headers.forEach((h, idx) => {
-                        const rawVal = rec.cells[idx];
-                        rowObj[h] = rawVal;
+                    const span = document.createElement('span');
+                    span.innerText = col;
+                    span.onclick = () => chk.click();
 
-                        if (h === "VALOR TOTAL") {
-                            let num = 0;
-                            if (typeof rawVal === 'number') num = rawVal;
-                            else if (rawVal !== null && rawVal !== undefined) {
-                                const cleanStr = String(rawVal).replace(/[R$\s]/g, '').replace(',', '.');
-                                const parsed = parseFloat(cleanStr);
-                                num = !isNaN(parsed) ? parsed : 0;
-                            }
-                            rowObj._numValorTotal = num;
-                        }
-
-                        if (h === "DATA DA AUTORIZAÇÃO") {
-                            rowObj._dateAutorizacao = parseCellDate(rawVal);
-                        }
-
-                        if (h === "DATA DE AUTUAÇÃO") {
-                            rowObj._dateAutuacao = parseCellDate(rawVal);
-                        }
-                    });
-
-                    return rowObj;
+                    item.appendChild(chk);
+                    item.appendChild(span);
+                    container.appendChild(item);
                 });
             }
 
-            function buildDynamicFiltersUI() {
-                const container = document.getElementById('dynamicFiltersContainer');
+            function filterColumnList(query) {
+                const q = query.toLowerCase();
+                const items = document.querySelectorAll('.column-dropdown-item');
+                items.forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    item.style.display = text.includes(q) ? 'flex' : 'none';
+                });
+            }
+
+            function selectAllColumns(selectAll) {
+                if (selectAll) {
+                    state.visibleHeaders = [...state.allAvailableHeaders];
+                } else {
+                    state.visibleHeaders = [];
+                }
+                state.headers = [...state.visibleHeaders];
+                buildColumnDropdownList();
+                buildColumnPickerTab();
+                buildDynamicMultiFilters();
+                applyFilters();
+            }
+
+            function toggleColumnVisibility(colName, isVisible) {
+                if (isVisible) {
+                    if (!state.visibleHeaders.includes(colName)) state.visibleHeaders.push(colName);
+                } else {
+                    state.visibleHeaders = state.visibleHeaders.filter(c => c !== colName);
+                    delete state.filters.multiSelect[colName];
+                }
+                state.headers = [...state.visibleHeaders];
+                document.getElementById('metaColCount').innerText = state.visibleHeaders.length;
+                document.getElementById('visibleColsCountBadge').innerText = `${state.visibleHeaders.length} de ${state.allAvailableHeaders.length}`;
+                buildColumnPickerTab();
+                buildDynamicMultiFilters();
+                applyFilters();
+            }
+
+            // ABA GERENCIAR COLUNAS (LISTA SUSPENSA E BADGES)
+            function buildColumnPickerTab() {
+                const select = document.getElementById('columnPickerSelect');
+                select.innerHTML = `<option value="">-- Escolha uma coluna para ativar --</option>`;
+
+                state.allAvailableHeaders.forEach(col => {
+                    if (!state.visibleHeaders.includes(col)) {
+                        const opt = document.createElement('option');
+                        opt.value = col;
+                        opt.innerText = col;
+                        select.appendChild(opt);
+                    }
+                });
+
+                const chipsBox = document.getElementById('activeColumnsChips');
+                chipsBox.innerHTML = "";
+
+                state.visibleHeaders.forEach(col => {
+                    const chip = document.createElement('div');
+                    chip.style.cssText = "background:#e2e8f0; color:#1e293b; padding:4px 10px; border-radius:14px; font-size:0.78rem; font-weight:600; display:flex; align-items:center; gap:6px;";
+                    chip.innerHTML = `${escapeHtml(col)} <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.app.removeColumn('${escapeHtml(col)}');"></i>`;
+                    chipsBox.appendChild(chip);
+                });
+            }
+
+            function handleColumnPicker(colName) {
+                if (!colName) return;
+                toggleColumnVisibility(colName, true);
+                buildColumnDropdownList();
+            }
+
+            // SISTEMA DINÂMICO DE FILTROS COM CAIXA DE MÚLTIPLA SELEÇÃO
+            function getColumnUniqueValues(colName) {
+                const valuesMap = new Map();
+                state.rows.forEach(r => {
+                    let val = r[colName];
+                    let strVal = "";
+                    if (val === null || val === undefined || String(val).trim() === "") {
+                        strVal = "(Vazio)";
+                    } else if (isDateColumn(colName) || val instanceof Date) {
+                        strVal = formatDateBRL(val);
+                    } else if (colName.toUpperCase().includes("VALOR") && r[`_num_${colName}`] !== undefined) {
+                        strVal = formatCurrency(r[`_num_${colName}`]);
+                    } else {
+                        strVal = String(val).trim();
+                    }
+                    valuesMap.set(strVal, (valuesMap.get(strVal) || 0) + 1);
+                });
+                return valuesMap;
+            }
+
+            function buildDynamicMultiFilters() {
+                const container = document.getElementById('tableDynamicMultiFilters');
+                if (!container) return;
                 container.innerHTML = "";
 
-                const targetFilterCols = [
-                    { col: "MODALIDADE", label: "Modalidade" },
-                    { col: "FONTE", label: "Fonte de Recursos" },
-                    { col: "STATUS DA SOLICITAÇÃO", label: "Status da Solicitação" },
-                    { col: "LOCALIZAÇÃO ATUAL", label: "Localização Atual" },
-                    { col: "STATUS FINAL", label: "Status Final" }
-                ];
+                if (state.visibleHeaders.length === 0) {
+                    container.innerHTML = "<p style='color:var(--text-muted); font-size:0.8rem;'>Nenhuma coluna visível para compor filtros.</p>";
+                    updateActiveFiltersBadge();
+                    return;
+                }
 
-                targetFilterCols.forEach(filterDef => {
-                    if (!state.headers.includes(filterDef.col)) return;
+                state.visibleHeaders.forEach(col => {
+                    const uniqueValuesMap = getColumnUniqueValues(col);
+                    const totalUnique = uniqueValuesMap.size;
+                    const colSanitized = sanitizeId(col);
 
-                    const groupDiv = document.createElement('div');
-                    groupDiv.className = "filter-group";
+                    const isFiltered = state.filters.multiSelect[col] instanceof Set;
+                    const selectedCount = isFiltered ? state.filters.multiSelect[col].size : totalUnique;
 
-                    const label = document.createElement('label');
-                    label.innerText = filterDef.label;
+                    let statusText = "(Todos)";
+                    if (isFiltered) {
+                        if (selectedCount === 0) statusText = "(Nenhum)";
+                        else if (selectedCount === totalUnique) statusText = "(Todos)";
+                        else statusText = `(${selectedCount}/${totalUnique})`;
+                    }
 
-                    const select = document.createElement('select');
-                    select.id = `filter_col_${sanitizeId(filterDef.col)}`;
-                    select.dataset.column = filterDef.col;
-                    select.innerHTML = `<option value="">(Todos)</option>`;
-                    select.onchange = function() {
-                        const val = this.value;
-                        if (val === "") {
-                            delete state.filters.categorical[filterDef.col];
-                        } else {
-                            state.filters.categorical[filterDef.col] = val;
-                        }
-                        applyFilters();
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "multi-filter-wrapper";
+                    wrapper.id = `wrapper_filter_${colSanitized}`;
+
+                    wrapper.innerHTML = `
+                        <div class="multi-filter-label" title="${escapeHtml(col)}">${escapeHtml(col)}</div>
+                        <button type="button" class="multi-filter-btn ${isFiltered && selectedCount < totalUnique ? 'is-filtered' : ''}" id="btn_filter_${colSanitized}" onclick="window.app.toggleFilterDropdown('${escapeHtml(col)}');">
+                            <span class="btn-text-col" id="label_status_${colSanitized}">${escapeHtml(statusText)}</span>
+                            ${isFiltered && selectedCount < totalUnique ? `<span class="badge-count">${selectedCount}</span>` : ''}
+                            <i class="fa-solid fa-chevron-down" style="font-size:0.65rem; color:var(--text-muted);"></i>
+                        </button>
+                        <div class="multi-filter-dropdown-menu" id="menu_filter_${colSanitized}">
+                            <input type="text" class="multi-filter-search" placeholder="Buscar opção..." oninput="window.app.searchFilterOptions('${escapeHtml(col)}', this.value);" />
+                            <div class="multi-filter-actions">
+                                <a href="javascript:void(0)" onclick="window.app.setMultiFilterAll('${escapeHtml(col)}', true);">Marcar Todos</a>
+                                <a href="javascript:void(0)" onclick="window.app.setMultiFilterAll('${escapeHtml(col)}', false);">Desmarcar</a>
+                                <a href="javascript:void(0)" onclick="window.app.resetSingleFilter('${escapeHtml(col)}');" style="color:var(--danger-color);">Limpar</a>
+                            </div>
+                            <div class="multi-filter-list" id="list_filter_${colSanitized}"></div>
+                        </div>
+                    `;
+
+                    container.appendChild(wrapper);
+                    populateFilterOptionsList(col, uniqueValuesMap);
+                });
+
+                updateActiveFiltersBadge();
+            }
+
+            function populateFilterOptionsList(col, uniqueValuesMap, filterText = "") {
+                const colSanitized = sanitizeId(col);
+                const listContainer = document.getElementById(`list_filter_${colSanitized}`);
+                if (!listContainer) return;
+                listContainer.innerHTML = "";
+
+                const isFiltered = state.filters.multiSelect[col] instanceof Set;
+                const selectedSet = isFiltered ? state.filters.multiSelect[col] : null;
+
+                const sortedEntries = Array.from(uniqueValuesMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+                const filterLower = filterText.toLowerCase();
+
+                sortedEntries.forEach(([valStr, count]) => {
+                    if (filterLower && !valStr.toLowerCase().includes(filterLower)) {
+                        return;
+                    }
+
+                    const isChecked = selectedSet ? selectedSet.has(valStr) : true;
+
+                    const item = document.createElement('label');
+                    item.className = "multi-filter-item";
+
+                    const chk = document.createElement('input');
+                    chk.type = "checkbox";
+                    chk.checked = isChecked;
+                    chk.onchange = function() {
+                        window.app.handleOptionToggle(col, valStr, this.checked);
                     };
 
-                    groupDiv.appendChild(label);
-                    groupDiv.appendChild(select);
-                    container.appendChild(groupDiv);
-                });
+                    const spanText = document.createElement('span');
+                    spanText.className = "item-label";
+                    spanText.innerText = valStr;
+                    spanText.title = valStr;
 
-                // Faixa de Valor
-                if (state.headers.includes("VALOR TOTAL")) {
-                    const groupVal = document.createElement('div');
-                    groupVal.className = "filter-group";
-                    groupVal.innerHTML = `
-                        <label>Faixa de Valor (R$)</label>
-                        <div class="filter-range">
-                            <input type="number" id="filter_val_min" placeholder="Mínimo" onchange="window.app.handleRangeFilter('valorMin', this.value);" />
-                            <input type="number" id="filter_val_max" placeholder="Máximo" onchange="window.app.handleRangeFilter('valorMax', this.value);" />
-                        </div>
-                    `;
-                    container.appendChild(groupVal);
-                }
+                    const spanCount = document.createElement('span');
+                    spanCount.className = "item-count";
+                    spanCount.innerText = `(${count})`;
 
-                // Intervalo de Datas
-                if (state.headers.includes("DATA DA AUTORIZAÇÃO")) {
-                    const groupDate = document.createElement('div');
-                    groupDate.className = "filter-group";
-                    groupDate.innerHTML = `
-                        <label>Data de Autorização</label>
-                        <div class="filter-range">
-                            <input type="date" id="filter_date_ini" onchange="window.app.handleRangeFilter('dataAutIni', this.value);" />
-                            <input type="date" id="filter_date_fim" onchange="window.app.handleRangeFilter('dataAutFim', this.value);" />
-                        </div>
-                    `;
-                    container.appendChild(groupDate);
-                }
-
-                updateDropdownOptions();
-            }
-
-            function updateDropdownOptions() {
-                const targetFilterCols = [
-                    "MODALIDADE", "FONTE", "STATUS DA SOLICITAÇÃO", "LOCALIZAÇÃO ATUAL", "STATUS FINAL"
-                ];
-
-                targetFilterCols.forEach(colName => {
-                    const el = document.getElementById(`filter_col_${sanitizeId(colName)}`);
-                    if (!el) return;
-
-                    const currentSelected = state.filters.categorical[colName] || "";
-                    
-                    const matchingRows = state.normalizedRows.filter(row => {
-                        for (let otherCol in state.filters.categorical) {
-                            if (otherCol !== colName && state.filters.categorical[otherCol]) {
-                                const rowVal = String(row[otherCol] || '').trim();
-                                if (rowVal !== state.filters.categorical[otherCol]) return false;
-                            }
-                        }
-                        return true;
-                    });
-
-                    const uniqueVals = new Set();
-                    matchingRows.forEach(r => {
-                        const val = r[colName];
-                        if (val !== null && val !== undefined && String(val).trim() !== "") {
-                            uniqueVals.add(String(val).trim());
-                        }
-                    });
-
-                    const sortedVals = Array.from(uniqueVals).sort();
-
-                    let html = `<option value="">(Todos)</option>`;
-                    sortedVals.forEach(v => {
-                        const isSelected = v === currentSelected ? 'selected' : '';
-                        html += `<option value="${escapeHtml(v)}" ${isSelected}>${escapeHtml(v)}</option>`;
-                    });
-                    el.innerHTML = html;
+                    item.appendChild(chk);
+                    item.appendChild(spanText);
+                    item.appendChild(spanCount);
+                    listContainer.appendChild(item);
                 });
             }
 
-            function handleRangeFilter(type, value) {
-                state.filters.ranges[type] = value !== "" ? value : null;
+            function toggleFilterDropdown(col) {
+                const colSanitized = sanitizeId(col);
+                const menu = document.getElementById(`menu_filter_${colSanitized}`);
+                if (!menu) return;
+
+                const isOpen = menu.classList.contains('open');
+                document.querySelectorAll('.multi-filter-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+                
+                if (!isOpen) {
+                    menu.classList.add('open');
+                    const searchInput = menu.querySelector('.multi-filter-search');
+                    if (searchInput) {
+                        searchInput.value = "";
+                        const uniqueMap = getColumnUniqueValues(col);
+                        populateFilterOptionsList(col, uniqueMap);
+                        searchInput.focus();
+                    }
+                }
+            }
+
+            function searchFilterOptions(col, query) {
+                const uniqueMap = getColumnUniqueValues(col);
+                populateFilterOptionsList(col, uniqueMap, query);
+            }
+
+            function handleOptionToggle(col, valStr, isChecked) {
+                const uniqueValuesMap = getColumnUniqueValues(col);
+                const totalUnique = uniqueValuesMap.size;
+
+                if (!state.filters.multiSelect[col]) {
+                    state.filters.multiSelect[col] = new Set(uniqueValuesMap.keys());
+                }
+
+                if (isChecked) {
+                    state.filters.multiSelect[col].add(valStr);
+                } else {
+                    state.filters.multiSelect[col].delete(valStr);
+                }
+
+                if (state.filters.multiSelect[col].size === totalUnique) {
+                    delete state.filters.multiSelect[col];
+                }
+
+                updateFilterButtonUI(col);
+                applyFilters();
+            }
+
+            function setMultiFilterAll(col, selectAll) {
+                const uniqueValuesMap = getColumnUniqueValues(col);
+                if (selectAll) {
+                    delete state.filters.multiSelect[col];
+                } else {
+                    state.filters.multiSelect[col] = new Set();
+                }
+                populateFilterOptionsList(col, uniqueValuesMap);
+                updateFilterButtonUI(col);
+                applyFilters();
+            }
+
+            function resetSingleFilter(col) {
+                delete state.filters.multiSelect[col];
+                const uniqueValuesMap = getColumnUniqueValues(col);
+                populateFilterOptionsList(col, uniqueValuesMap);
+                updateFilterButtonUI(col);
+                applyFilters();
+            }
+
+            function updateFilterButtonUI(col) {
+                const colSanitized = sanitizeId(col);
+                const btn = document.getElementById(`btn_filter_${colSanitized}`);
+                const statusLabel = document.getElementById(`label_status_${colSanitized}`);
+                if (!btn || !statusLabel) return;
+
+                const uniqueValuesMap = getColumnUniqueValues(col);
+                const totalUnique = uniqueValuesMap.size;
+                const isFiltered = state.filters.multiSelect[col] instanceof Set;
+                const selectedCount = isFiltered ? state.filters.multiSelect[col].size : totalUnique;
+
+                if (!isFiltered || selectedCount === totalUnique) {
+                    btn.classList.remove('is-filtered');
+                    statusLabel.innerText = "(Todos)";
+                    const oldBadge = btn.querySelector('.badge-count');
+                    if (oldBadge) oldBadge.remove();
+                } else {
+                    btn.classList.add('is-filtered');
+                    statusLabel.innerText = selectedCount === 0 ? "(Nenhum)" : `(${selectedCount}/${totalUnique})`;
+                    let badge = btn.querySelector('.badge-count');
+                    if (!badge) {
+                        badge = document.createElement('span');
+                        badge.className = 'badge-count';
+                        btn.insertBefore(badge, btn.querySelector('.fa-chevron-down'));
+                    }
+                    badge.innerText = selectedCount;
+                }
+                updateActiveFiltersBadge();
+            }
+
+            function updateActiveFiltersBadge() {
+                const badge = document.getElementById('activeFiltersBadge');
+                if (!badge) return;
+
+                const filterKeys = Object.keys(state.filters.multiSelect);
+                const hasSearch = state.filters.search !== "";
+                const totalActive = filterKeys.length + (hasSearch ? 1 : 0);
+
+                if (totalActive === 0) {
+                    badge.className = "active-filter-pill";
+                    badge.innerText = "Nenhum filtro ativo";
+                } else {
+                    badge.className = "active-filter-pill has-filters";
+                    badge.innerText = `${totalActive} filtro(s) ativo(s) (${state.filteredRows.length} de ${state.rows.length})`;
+                }
+            }
+
+            function toggleFilterCollapse() {
+                const container = document.getElementById('tableDynamicMultiFilters');
+                const icon = document.getElementById('filterCollapseIcon');
+                if (!container || !icon) return;
+
+                if (container.style.display === 'none') {
+                    container.style.display = 'grid';
+                    icon.className = 'fa-solid fa-chevron-up';
+                } else {
+                    container.style.display = 'none';
+                    icon.className = 'fa-solid fa-chevron-down';
+                }
+            }
+
+            function handleSearch(val) {
+                state.filters.search = val.trim().toLowerCase();
                 applyFilters();
             }
 
             function clearAllFilters() {
                 state.filters.search = "";
-                state.filters.categorical = {};
-                state.filters.ranges = { valorMin: null, valorMax: null, dataAutIni: null, dataAutFim: null };
-
-                document.getElementById('globalTableSearch').value = "";
-                const valMin = document.getElementById('filter_val_min');
-                if (valMin) valMin.value = "";
-                const valMax = document.getElementById('filter_val_max');
-                if (valMax) valMax.value = "";
-                const dIni = document.getElementById('filter_date_ini');
-                if (dIni) dIni.value = "";
-                const dFim = document.getElementById('filter_date_fim');
-                if (dFim) dFim.value = "";
-
+                state.filters.multiSelect = {};
+                const searchInput = document.getElementById('tableGlobalSearch');
+                if (searchInput) searchInput.value = "";
+                
+                buildDynamicMultiFilters();
                 applyFilters();
             }
 
             function applyFilters() {
-                const { search, categorical, ranges } = state.filters;
-
-                state.filteredRows = state.normalizedRows.filter(row => {
-                    if (search) {
-                        const rowText = Object.values(row)
-                            .filter(v => typeof v === 'string' || typeof v === 'number')
+                state.filteredRows = state.rows.filter(row => {
+                    // 1. Busca Global
+                    if (state.filters.search) {
+                        const text = Object.entries(row)
+                            .map(([k, v]) => isDateColumn(k) ? formatDateBRL(v) : String(v || ''))
                             .join(' ')
                             .toLowerCase();
-                        if (!rowText.includes(search)) return false;
+                        if (!text.includes(state.filters.search)) return false;
                     }
 
-                    for (let col in categorical) {
-                        const targetVal = categorical[col];
-                        if (targetVal) {
-                            const cellVal = String(row[col] || '').trim();
-                            if (cellVal !== targetVal) return false;
+                    // 2. Filtros de Múltipla Seleção Dinâmicos
+                    for (let col in state.filters.multiSelect) {
+                        const allowedSet = state.filters.multiSelect[col];
+                        if (allowedSet instanceof Set) {
+                            let val = row[col];
+                            let strVal = "";
+                            if (val === null || val === undefined || String(val).trim() === "") {
+                                strVal = "(Vazio)";
+                            } else if (isDateColumn(col) || val instanceof Date) {
+                                strVal = formatDateBRL(val);
+                            } else if (col.toUpperCase().includes("VALOR") && row[`_num_${col}`] !== undefined) {
+                                strVal = formatCurrency(row[`_num_${col}`]);
+                            } else {
+                                strVal = String(val).trim();
+                            }
+
+                            if (!allowedSet.has(strVal)) {
+                                return false;
+                            }
                         }
                     }
-
-                    if (ranges.valorMin !== null && !isNaN(ranges.valorMin)) {
-                        if (row._numValorTotal < parseFloat(ranges.valorMin)) return false;
-                    }
-                    if (ranges.valorMax !== null && !isNaN(ranges.valorMax)) {
-                        if (row._numValorTotal > parseFloat(ranges.valorMax)) return false;
-                    }
-
-                    if (ranges.dataAutIni) {
-                        if (!row._dateAutorizacao || row._dateAutorizacao < new Date(ranges.dataAutIni + "T00:00:00")) return false;
-                    }
-                    if (ranges.dataAutFim) {
-                        if (!row._dateAutorizacao || row._dateAutorizacao > new Date(ranges.dataAutFim + "T23:59:59")) return false;
-                    }
-
                     return true;
                 });
 
-                // Remove da seleção itens que não estão mais nos filtros
-                const activeFilteredIds = new Set(state.filteredRows.map(r => r._sheetRowNum));
-                for (let selectedId of state.selectedRowKeys) {
-                    if (!activeFilteredIds.has(selectedId)) {
-                        state.selectedRowKeys.delete(selectedId);
-                    }
-                }
-
-                const activeCount = Object.keys(categorical).length + 
-                    (search ? 1 : 0) + 
-                    (ranges.valorMin !== null ? 1 : 0) + 
-                    (ranges.valorMax !== null ? 1 : 0) + 
-                    (ranges.dataAutIni ? 1 : 0) + 
-                    (ranges.dataAutFim ? 1 : 0);
-
-                document.getElementById('activeFilterBadgeCount').innerText = activeCount;
-                document.getElementById('filteredCountInfo').innerText = `${state.filteredRows.length} de ${state.normalizedRows.length}`;
-
-                updateSelectionToolbarUI();
-                recomputeMetricsAndRender();
-                updateDropdownOptions();
-            }
-
-            // Define o conjunto ativo para cálculos (se houver seleção de checkboxes, calcula sobre eles; senão, sobre os filtrados)
-            function getActiveCalculationRows() {
-                if (state.selectedRowKeys.size > 0) {
-                    return state.filteredRows.filter(r => state.selectedRowKeys.has(r._sheetRowNum));
-                }
-                return state.filteredRows;
-            }
-
-            function recomputeMetricsAndRender() {
-                updateKPIs();
-                updateCharts();
+                renderKPIs();
+                renderCharts();
                 state.pagination.currentPage = 1;
                 renderTable();
+                updateActiveFiltersBadge();
             }
 
-            // SELEÇÃO POR CHECKBOXES INDIVIDUAIS
-            function toggleRowSelection(sheetRowNum) {
-                if (state.selectedRowKeys.has(sheetRowNum)) {
-                    state.selectedRowKeys.delete(sheetRowNum);
-                } else {
-                    state.selectedRowKeys.add(sheetRowNum);
-                }
-                updateSelectionToolbarUI();
-                updateKPIs();
-                updateCharts();
-                renderTable();
-            }
+            // ATUALIZAÇÃO DOS KPIS
+            function renderKPIs() {
+                const total = state.filteredRows.length;
+                let sum = 0, authorized = 0, pending = 0, siga = 0, contracted = 0;
 
-            function selectAllFiltered() {
-                state.filteredRows.forEach(r => state.selectedRowKeys.add(r._sheetRowNum));
-                updateSelectionToolbarUI();
-                updateKPIs();
-                updateCharts();
-                renderTable();
-            }
+                state.filteredRows.forEach(r => {
+                    for (let k in r) {
+                        if (k.startsWith('_num_')) sum += (r[k] || 0);
+                    }
 
-            function clearSelection() {
-                state.selectedRowKeys.clear();
-                updateSelectionToolbarUI();
-                updateKPIs();
-                updateCharts();
-                renderTable();
-            }
+                    const textRow = Object.values(r).join(' ').toUpperCase();
+                    if (textRow.includes("AUTORIZADO")) authorized++;
+                    if (textRow.includes("AGUARD")) pending++;
+                    if (textRow.includes("CONTRATADO") || textRow.includes("FINALIZADO") || textRow.includes("ASSINADO")) contracted++;
 
-            function toggleSelectAllCheckbox(checked) {
-                if (checked) {
-                    selectAllFiltered();
-                } else {
-                    clearSelection();
-                }
-            }
-
-            function updateSelectionToolbarUI() {
-                const count = state.selectedRowKeys.size;
-                const counterText = document.getElementById('selectionCounterText');
-                if (count > 0) {
-                    counterText.innerHTML = `<strong>${count} processo(s) selecionado(s) manualmente</strong> (os KPIs, gráficos e exportações refletem esta seleção).`;
-                } else {
-                    counterText.innerText = `Nenhum processo selecionado individualmente (cálculos e exportações sobre toda a visualização ativa de ${state.filteredRows.length} registros).`;
-                }
-            }
-
-            // ATUALIZAÇÃO DOS KPIS COM PROTEÇÃO ANTI-ESTOURO
-            function updateKPIs() {
-                const rows = getActiveCalculationRows();
-                const total = rows.length;
-                let sumValue = 0;
-                let authorizedCount = 0;
-                let pendingCount = 0;
-                let sigaCount = 0;
-                let contractedCount = 0;
-
-                rows.forEach(r => {
-                    sumValue += (r._numValorTotal || 0);
-
-                    const statusSol = String(r['STATUS DA SOLICITAÇÃO'] || '').trim().toUpperCase();
-                    if (statusSol.includes("AUTORIZADO")) authorizedCount++;
-                    if (statusSol.includes("AGUARD")) pendingCount++;
-
-                    const procSiga = String(r['Nº PROCESSO SIGA'] || '').trim();
-                    if (procSiga !== "" && procSiga !== "_" && procSiga !== "NÃO INSERIDO") sigaCount++;
-
-                    const statusFin = String(r['STATUS FINAL'] || '').trim().toUpperCase();
-                    if (statusFin.includes("CONTRATADO") || statusFin.includes("FINALIZADO") || statusFin.includes("ASSINADO")) contractedCount++;
+                    const sigaField = Object.entries(r).find(([k]) => k.toUpperCase().includes("SIGA"));
+                    if (sigaField && String(sigaField[1]).trim() !== "" && String(sigaField[1]).trim() !== "_") {
+                        siga++;
+                    }
                 });
 
-                const avg = total > 0 ? sumValue / total : 0;
-                const isManualSelection = state.selectedRowKeys.size > 0;
-                const subContext = isManualSelection ? `Selecionados: ${total}` : `Filtrados: ${total} de ${state.normalizedRows.length}`;
-
-                document.getElementById('kpiTotalProcesses').innerText = total;
-                document.getElementById('kpiFilteredProcessesSub').innerText = subContext;
-                
-                document.getElementById('kpiTotalValue').innerText = formatCurrencyBRL(sumValue);
-                document.getElementById('filteredValueSum').innerText = formatCurrencyBRL(sumValue);
-                document.getElementById('kpiAvgValueSub').innerText = `Média: ${formatCurrencyBRL(avg)}`;
-                
-                document.getElementById('kpiAuthorizedCount').innerText = authorizedCount;
-                document.getElementById('kpiAuthorizedPct').innerText = total > 0 ? `${((authorizedCount / total) * 100).toFixed(1)}% do grupo` : "0%";
-                
-                document.getElementById('kpiPendingCount').innerText = pendingCount;
-                document.getElementById('kpiPendingPct').innerText = total > 0 ? `${((pendingCount / total) * 100).toFixed(1)}% do grupo` : "0%";
-                
-                document.getElementById('kpiSigaCount').innerText = sigaCount;
-                document.getElementById('kpiSigaPct').innerText = total > 0 ? `${((sigaCount / total) * 100).toFixed(1)}% do grupo` : "0%";
-                
-                document.getElementById('kpiContractedCount').innerText = contractedCount;
-                document.getElementById('kpiContractedPct').innerText = total > 0 ? `${((contractedCount / total) * 100).toFixed(1)}% do grupo` : "0%";
+                const avg = total > 0 ? sum / total : 0;
+                document.getElementById('kpiCount').innerText = total;
+                document.getElementById('kpiCountSub').innerText = `Total na base: ${state.rows.length}`;
+                document.getElementById('kpiSum').innerText = formatCurrency(sum);
+                document.getElementById('kpiAvg').innerText = `Média: ${formatCurrency(avg)}`;
+                document.getElementById('kpiAuth').innerText = authorized;
+                document.getElementById('kpiAuthPct').innerText = total > 0 ? `${((authorized / total) * 100).toFixed(1)}% do total` : "0%";
+                document.getElementById('kpiPending').innerText = pending;
+                document.getElementById('kpiPendingPct').innerText = total > 0 ? `${((pending / total) * 100).toFixed(1)}% do total` : "0%";
+                document.getElementById('kpiSiga').innerText = siga;
+                document.getElementById('kpiSigaPct').innerText = total > 0 ? `${((siga / total) * 100).toFixed(1)}% do total` : "0%";
+                document.getElementById('kpiContracted').innerText = contracted;
+                document.getElementById('kpiContractedPct').innerText = total > 0 ? `${((contracted / total) * 100).toFixed(1)}% do total` : "0%";
             }
 
-            // ATUALIZAÇÃO DOS GRÁFICOS
-            function updateCharts() {
-                const rows = getActiveCalculationRows();
+            // ATUALIZAÇÃO DOS GRÁFICOS (CHART.JS)
+            function renderCharts() {
+                const modCol = state.headers.find(h => h.toUpperCase().includes("MODALIDADE")) || state.headers[2];
+                renderGenericBar('chartModalidade', modCol, 'Processos', '#003366');
 
-                // 1. Modalidade
-                const modalidadeCounts = {};
-                rows.forEach(r => {
-                    const m = String(r['MODALIDADE'] || 'Não Informado').trim();
-                    modalidadeCounts[m] = (modalidadeCounts[m] || 0) + 1;
-                });
-                renderBarChart('chartModalidade', Object.keys(modalidadeCounts), Object.values(modalidadeCounts), 'Processos', '#003366');
+                const fonteCol = state.headers.find(h => h.toUpperCase().includes("FONTE"));
+                renderFonteDoughnut('chartFonte', fonteCol);
 
-                // 2. Fonte
-                const fonteSums = {};
-                rows.forEach(r => {
-                    const f = String(r['FONTE'] || 'Não Informado').trim();
-                    fonteSums[f] = (fonteSums[f] || 0) + (r._numValorTotal || 0);
-                });
-                renderDoughnutChart('chartFonte', Object.keys(fonteSums), Object.values(fonteSums));
+                const locCol = state.headers.find(h => h.toUpperCase().includes("LOCALIZA"));
+                renderGenericBar('chartLocalizacao', locCol, 'Processos', '#1e5a96', 8);
 
-                // 3. Localização
-                const locCounts = {};
-                rows.forEach(r => {
-                    const l = String(r['LOCALIZAÇÃO ATUAL'] || 'Não Informado').trim();
-                    locCounts[l] = (locCounts[l] || 0) + 1;
-                });
-                const sortedLocs = Object.entries(locCounts).sort((a,b) => b[1] - a[1]).slice(0, 8);
-                renderBarChart('chartLocalizacao', sortedLocs.map(i => i[0]), sortedLocs.map(i => i[1]), 'Processos', '#1e5a96');
-
-                // 4. Status
-                const statusCounts = {};
-                rows.forEach(r => {
-                    const s = String(r['STATUS DA SOLICITAÇÃO'] || 'Não Informado').trim();
-                    statusCounts[s] = (statusCounts[s] || 0) + 1;
-                });
-                renderPieChart('chartStatus', Object.keys(statusCounts), Object.values(statusCounts));
+                const statCol = state.headers.find(h => h.toUpperCase().includes("STATUS DA SOLICITAÇÃO") || h.toUpperCase().includes("STATUS"));
+                renderGenericPie('chartStatus', statCol);
             }
 
-            function renderBarChart(canvasId, labels, data, datasetLabel, color) {
+            function renderGenericBar(canvasId, colName, label, color, limit = null) {
                 if (state.charts[canvasId]) state.charts[canvasId].destroy();
+                if (!colName) return;
+
+                const counts = {};
+                state.filteredRows.forEach(r => {
+                    const v = String(r[colName] || 'Não Informado').trim();
+                    counts[v] = (counts[v] || 0) + 1;
+                });
+
+                let items = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+                if (limit) items = items.slice(0, limit);
+
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 state.charts[canvasId] = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: labels,
-                        datasets: [{
-                            label: datasetLabel,
-                            data: data,
-                            backgroundColor: color,
-                            borderRadius: 4
-                        }]
+                        labels: items.map(i => i[0]),
+                        datasets: [{ label: label, data: items.map(i => i[1]), backgroundColor: color, borderRadius: 4 }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { precision: 0 } },
-                            x: { ticks: { font: { size: 10 } } }
-                        }
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { font: { size: 10 } } } }
                     }
                 });
             }
 
-            function renderDoughnutChart(canvasId, labels, data) {
+            function renderFonteDoughnut(canvasId, colName) {
                 if (state.charts[canvasId]) state.charts[canvasId].destroy();
+                if (!colName) return;
+
+                const sums = {};
+                state.filteredRows.forEach(r => {
+                    const f = String(r[colName] || 'Não Informado').trim();
+                    let val = 0;
+                    for (let k in r) if (k.startsWith('_num_')) val += (r[k] || 0);
+                    sums[f] = (sums[f] || 0) + val;
+                });
+
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 state.charts[canvasId] = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: ['#003366', '#28a745', '#ffc107', '#17a2b8', '#6f42c1', '#fd7e14']
-                        }]
+                        labels: Object.keys(sums),
+                        datasets: [{ data: Object.values(sums), backgroundColor: ['#003366', '#28a745', '#ffc107', '#17a2b8', '#6f42c1', '#fd7e14'] }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(item) {
-                                        return `${item.label}: ${formatCurrencyBRL(item.raw)}`;
-                                    }
-                                }
-                            }
+                            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+                            tooltip: { callbacks: { label: item => `${item.label}: ${formatCurrency(item.raw)}` } }
                         }
                     }
                 });
             }
 
-            function renderPieChart(canvasId, labels, data) {
+            function renderGenericPie(canvasId, colName) {
                 if (state.charts[canvasId]) state.charts[canvasId].destroy();
+                if (!colName) return;
+
+                const counts = {};
+                state.filteredRows.forEach(r => {
+                    const v = String(r[colName] || 'Não Informado').trim();
+                    counts[v] = (counts[v] || 0) + 1;
+                });
+
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 state.charts[canvasId] = new Chart(ctx, {
                     type: 'pie',
                     data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d']
-                        }]
+                        labels: Object.keys(counts),
+                        datasets: [{ data: Object.values(counts), backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d'] }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
-                        }
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
                     }
                 });
             }
 
-            // TABELA COM CHECKBOXES INDIVIDUAIS
+            // RENDERIZAÇÃO DA TABELA ANALÍTICA COM FORMATAÇÃO RIGOROSA
             function renderTable() {
-                const thead = document.getElementById('dataTableHead');
-                const tbody = document.getElementById('dataTableBody');
+                const thead = document.getElementById('mainTableHead');
+                const tbody = document.getElementById('mainTableBody');
 
-                const allFilteredSelected = state.filteredRows.length > 0 && state.filteredRows.every(r => state.selectedRowKeys.has(r._sheetRowNum));
-
-                // Montagem do cabeçalho
-                let trHead = "<tr>";
-                trHead += `<th class="chk-col"><input type="checkbox" class="custom-checkbox" id="selectAllCheckbox" onchange="window.app.toggleSelectAllCheckbox(this.checked);" ${allFilteredSelected ? 'checked' : ''} /></th>`;
-                state.headers.forEach(h => {
-                    trHead += `<th class="sortable" onclick="window.app.sortTable('${escapeHtml(h)}');">${escapeHtml(h)} <i class="fa-solid fa-sort" style="opacity:0.4;"></i></th>`;
+                let trH = "<tr>";
+                trH += `<th class="col-actions"><i class="fa-solid fa-trash-can"></i></th>`;
+                state.headers.forEach((h, idx) => {
+                    trH += `
+                        <th draggable="true" 
+                            ondragstart="window.app.handleDragStart(event, ${idx})"
+                            ondragover="window.app.handleDragOver(event)"
+                            ondragleave="window.app.handleDragLeave(event)"
+                            ondrop="window.app.handleDrop(event, ${idx})"
+                            onclick="window.app.sortTable('${escapeHtml(h)}');">
+                            <i class="fa-solid fa-grip-vertical" style="opacity:0.6; margin-right:4px;"></i>
+                            ${escapeHtml(h)}
+                            <i class="fa-solid fa-sort" style="opacity:0.4; margin-left:4px;"></i>
+                        </th>
+                    `;
                 });
-                trHead += "</tr>";
-                thead.innerHTML = trHead;
+                trH += "</tr>";
+                thead.innerHTML = trH;
 
-                // Ordenação
                 let sorted = [...state.filteredRows];
-                if (state.pagination.sortColumn) {
-                    const col = state.pagination.sortColumn;
-                    const dir = state.pagination.sortDirection === 'asc' ? 1 : -1;
+                if (state.pagination.sortCol) {
+                    const col = state.pagination.sortCol;
+                    const dir = state.pagination.sortDir === 'asc' ? 1 : -1;
                     sorted.sort((a, b) => {
                         let va = a[col] ?? '';
                         let vb = b[col] ?? '';
-                        if (col === "VALOR TOTAL") {
-                            va = a._numValorTotal || 0;
-                            vb = b._numValorTotal || 0;
+                        if (col.toUpperCase().includes("VALOR")) {
+                            va = a[`_num_${col}`] || 0;
+                            vb = b[`_num_${col}`] || 0;
+                        } else if (isDateColumn(col)) {
+                            va = parseToDateObject(va) ? parseToDateObject(va).getTime() : 0;
+                            vb = parseToDateObject(vb) ? parseToDateObject(vb).getTime() : 0;
                         }
                         if (va < vb) return -1 * dir;
                         if (va > vb) return 1 * dir;
@@ -1855,23 +1994,18 @@
                     });
                 }
 
-                // Paginação
-                const totalRecords = sorted.length;
+                const total = sorted.length;
                 let rpp = state.pagination.recordsPerPage;
                 let page = state.pagination.currentPage;
-
                 let pageRows = sorted;
                 let totalPages = 1;
 
                 if (rpp !== 'all') {
                     rpp = parseInt(rpp, 10);
-                    totalPages = Math.ceil(totalRecords / rpp) || 1;
+                    totalPages = Math.ceil(total / rpp) || 1;
                     if (page > totalPages) page = totalPages;
                     state.pagination.currentPage = page;
-
-                    const start = (page - 1) * rpp;
-                    const end = start + rpp;
-                    pageRows = sorted.slice(start, end);
+                    pageRows = sorted.slice((page - 1) * rpp, page * rpp);
                 }
 
                 if (pageRows.length === 0) {
@@ -1879,49 +2013,53 @@
                 } else {
                     let rowsHtml = "";
                     pageRows.forEach(row => {
-                        const isSelected = state.selectedRowKeys.has(row._sheetRowNum);
-                        rowsHtml += `<tr class="${isSelected ? 'row-selected' : ''}">`;
+                        rowsHtml += `<tr>`;
+                        rowsHtml += `<td class="col-actions"><button onclick="window.app.deleteRow(${row._id});" style="background:none; border:none; color:var(--danger-color); cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>`;
                         
-                        // Checkbox individual
-                        rowsHtml += `<td class="chk-col"><input type="checkbox" class="custom-checkbox" ${isSelected ? 'checked' : ''} onchange="window.app.toggleRowSelection(${row._sheetRowNum});" /></td>`;
-
-                        // Colunas
                         state.headers.forEach(h => {
                             const val = row[h];
-                            let formatted = formatDisplayCell(h, val, row);
-                            const isNum = (h === "VALOR TOTAL");
-                            rowsHtml += `<td class="${isNum ? 'num-cell' : ''}" onclick="window.app.openProcessDetail(${row._sheetRowNum});" title="${escapeHtml(String(val ?? ''))}">${formatted}</td>`;
+                            const isNum = h.toUpperCase().includes("VALOR");
+                            const isDate = isDateColumn(h);
+                            const displayVal = formatDisplayCell(h, val, row);
+
+                            let cellClass = "editable-cell";
+                            if (isNum) cellClass += " num-cell";
+                            if (isDate) cellClass += " date-cell";
+
+                            rowsHtml += `
+                                <td class="${cellClass}" 
+                                    ondblclick="window.app.startCellEdit(this, ${row._id}, '${escapeHtml(h)}');" 
+                                    title="Duplo clique para editar">
+                                    ${displayVal || '<span style="color:#adb5bd;">-</span>'}
+                                </td>
+                            `;
                         });
                         rowsHtml += `</tr>`;
                     });
                     tbody.innerHTML = rowsHtml;
                 }
 
-                const startNum = totalRecords === 0 ? 0 : (rpp === 'all' ? 1 : (page - 1) * rpp + 1);
-                const endNum = rpp === 'all' ? totalRecords : Math.min(page * rpp, totalRecords);
-                document.getElementById('paginationInfo').innerText = `Mostrando ${startNum} a ${endNum} de ${totalRecords} registros (Selecionados: ${state.selectedRowKeys.size})`;
+                const startNum = total === 0 ? 0 : (rpp === 'all' ? 1 : (page - 1) * rpp + 1);
+                const endNum = rpp === 'all' ? total : Math.min(page * rpp, total);
+                document.getElementById('paginationSummary').innerText = `Mostrando ${startNum} a ${endNum} de ${total} registros`;
 
                 renderPaginationButtons(totalPages, page);
             }
 
             function renderPaginationButtons(totalPages, currentPage) {
-                const container = document.getElementById('paginationButtons');
+                const nav = document.getElementById('paginationNav');
                 if (totalPages <= 1) {
-                    container.innerHTML = "";
+                    nav.innerHTML = "";
                     return;
                 }
 
-                let html = `<button onclick="window.app.goToPage(${currentPage - 1});" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>`;
-                
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
-
-                for (let p = startPage; p <= endPage; p++) {
-                    html += `<button class="${p === currentPage ? 'active' : ''}" onclick="window.app.goToPage(${p});">${p}</button>`;
+                let html = `<button class="btn btn-light" style="padding:3px 8px;" onclick="window.app.goToPage(${currentPage - 1});" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>`;
+                for (let p = Math.max(1, currentPage - 2); p <= Math.min(totalPages, currentPage + 2); p++) {
+                    const activeClass = p === currentPage ? 'btn-primary' : 'btn-light';
+                    html += `<button class="btn ${activeClass}" style="padding:3px 8px;" onclick="window.app.goToPage(${p});">${p}</button>`;
                 }
-
-                html += `<button onclick="window.app.goToPage(${currentPage + 1});" ${currentPage === totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>`;
-                container.innerHTML = html;
+                html += `<button class="btn btn-light" style="padding:3px 8px;" onclick="window.app.goToPage(${currentPage + 1});" ${currentPage === totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>`;
+                nav.innerHTML = html;
             }
 
             function goToPage(page) {
@@ -1936,423 +2074,474 @@
             }
 
             function sortTable(headerName) {
-                if (state.pagination.sortColumn === headerName) {
-                    state.pagination.sortDirection = state.pagination.sortDirection === 'asc' ? 'desc' : 'asc';
+                if (state.pagination.sortCol === headerName) {
+                    state.pagination.sortDir = state.pagination.sortDir === 'asc' ? 'desc' : 'asc';
                 } else {
-                    state.pagination.sortColumn = headerName;
-                    state.pagination.sortDirection = 'asc';
+                    state.pagination.sortCol = headerName;
+                    state.pagination.sortDir = 'asc';
                 }
                 renderTable();
             }
 
-            function handleTableSearch(val) {
-                window.debouncedSearch(val);
-            }
-
-            // MODAL DETALHES
-            function openProcessDetail(sheetRowNum) {
-                const row = state.normalizedRows.find(r => r._sheetRowNum === sheetRowNum);
+            // EDIÇÃO DE CÉLULAS COM DUPLO CLIQUE (EXIBE DD/MM/AAAA)
+            function startCellEdit(tdElement, rowId, colName) {
+                const row = state.rows.find(r => r._id === rowId);
                 if (!row) return;
 
-                const container = document.getElementById('processDetailsContainer');
-                let html = "";
-
-                state.headers.forEach(h => {
-                    const rawVal = row[h];
-                    let displayVal = formatDisplayCell(h, rawVal, row, true);
-                    html += `
-                        <div class="record-detail-row">
-                            <div class="detail-key">${escapeHtml(h)}:</div>
-                            <div class="detail-val">${displayVal}</div>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = html;
-                openModal('modalProcessDetail');
-            }
-
-            function openValidationModal() {
-                const log = state.validationLog;
-                document.getElementById('valStatusText').innerText = log.status.toUpperCase();
-                document.getElementById('valTotalCells').innerText = log.totalCells.toLocaleString('pt-BR');
-                document.getElementById('valErrorCount').innerText = log.errors.length;
-
-                const tbody = document.getElementById('valErrorsTableBody');
-                if (log.errors.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:15px; color:var(--success-color); font-weight:bold;"><i class="fa-solid fa-check-circle"></i> Todos os dados estão perfeitamente consistentes com os tipos esperados.</td></tr>`;
-                } else {
-                    let trs = "";
-                    log.errors.forEach(err => {
-                        trs += `
-                            <tr>
-                                <td>${err.line}</td>
-                                <td>${err.colLetter}</td>
-                                <td><strong>${escapeHtml(err.header)}</strong></td>
-                                <td><code>${err.cell}</code></td>
-                                <td style="color:var(--danger-color); font-weight:bold;">${escapeHtml(err.val)}</td>
-                                <td>${escapeHtml(err.expected)}</td>
-                                <td>${escapeHtml(err.problem)}</td>
-                            </tr>
-                        `;
-                    });
-                    tbody.innerHTML = trs;
+                let currentVal = row[colName] ?? "";
+                
+                if (isDateColumn(colName) || currentVal instanceof Date) {
+                    currentVal = formatDateBRL(currentVal);
                 }
 
-                openModal('modalValidation');
+                const input = document.createElement('input');
+                input.className = "cell-input-edit";
+                input.value = currentVal;
+
+                tdElement.innerHTML = "";
+                tdElement.appendChild(input);
+                input.focus();
+
+                function finishEdit() {
+                    const newVal = input.value;
+                    row[colName] = newVal;
+                    
+                    if (colName.toUpperCase().includes("VALOR")) {
+                        const clean = String(newVal).replace(/[R$\s]/g, '').replace(',', '.');
+                        const p = parseFloat(clean);
+                        row[`_num_${colName}`] = !isNaN(p) ? p : 0;
+                    }
+
+                    buildDynamicMultiFilters();
+                    applyFilters();
+                }
+
+                input.addEventListener('blur', finishEdit);
+                input.addEventListener('keydown', e => {
+                    if (e.key === 'Enter') finishEdit();
+                    if (e.key === 'Escape') renderTable();
+                });
             }
 
-            function openModal(id) {
-                document.getElementById(id).classList.add('open');
-            }
+            // ADICIONAR E REMOVER COLUNAS E LINHAS COM ATUALIZAÇÃO AUTOMÁTICA DOS FILTROS
+            function addNewColumn() {
+                const colName = prompt("Digite o nome da nova coluna:");
+                if (!colName || colName.trim() === "") return;
 
-            function closeModal(id) {
-                document.getElementById(id).classList.remove('open');
-            }
-
-            // EXPORTAÇÃO XLSX NO MESMO FORMATO ORIGINAL QUE PERMITE REIMPORTAR
-            function exportToXLSX() {
-                const rowsToExport = getActiveCalculationRows();
-                if (rowsToExport.length === 0) {
-                    alert("Não há registros selecionados ou filtrados para exportação.");
+                const clean = colName.trim();
+                if (state.allAvailableHeaders.includes(clean)) {
+                    alert("Já existe uma coluna com este nome.");
                     return;
                 }
 
-                // Cria matriz respeitando rigorosamente as 3 primeiras linhas originais
-                // Linha 1: Vazia
-                // Linha 2: Título institucional
-                // Linha 3: Subtítulos de tramitação
-                // Linha 4: As 14 colunas originais
-                // Linha 5+: Dados
-                const aoa = [];
-                aoa.push([]); // Linha 1
+                state.headers.push(clean);
+                state.allAvailableHeaders.push(clean);
+                state.visibleHeaders.push(clean);
+                state.rows.forEach(r => r[clean] = "");
+
+                buildColumnDropdownList();
+                buildColumnPickerTab();
+                buildDynamicMultiFilters();
+                renderTable();
+            }
+
+            function removeColumn(colName) {
+                state.headers = state.headers.filter(c => c !== colName);
+                state.visibleHeaders = state.visibleHeaders.filter(c => c !== colName);
+                delete state.filters.multiSelect[colName];
+
+                buildColumnDropdownList();
+                buildColumnPickerTab();
+                buildDynamicMultiFilters();
+                applyFilters();
+            }
+
+            function addNewRow() {
+                const newId = (state.rows.length > 0 ? Math.max(...state.rows.map(r => r._id)) : 0) + 1;
+                const newRow = { _id: newId };
+                state.allAvailableHeaders.forEach(h => newRow[h] = "");
+                state.rows.unshift(newRow);
+
+                buildDynamicMultiFilters();
+                applyFilters();
+                switchTab('tab-table');
+            }
+
+            function deleteRow(rowId) {
+                if (!confirm("Deseja realmente excluir este processo da base?")) return;
+                state.rows = state.rows.filter(r => r._id !== rowId);
+
+                buildDynamicMultiFilters();
+                applyFilters();
+            }
+
+            // DRAG & DROP DE CABEÇALHOS
+            function handleDragStart(e, idx) {
+                state.dragSrcColIdx = idx;
+                e.dataTransfer.effectAllowed = 'move';
+            }
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('drag-over');
+            }
+            function handleDragLeave(e) {
+                e.currentTarget.classList.remove('drag-over');
+            }
+            function handleDrop(e, targetIdx) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('drag-over');
+                if (state.dragSrcColIdx === null || state.dragSrcColIdx === targetIdx) return;
+
+                const dragged = state.headers.splice(state.dragSrcColIdx, 1)[0];
+                state.headers.splice(targetIdx, 0, dragged);
+                state.visibleHeaders = [...state.headers];
                 
-                const row2 = new Array(14).fill(null);
-                row2[0] = "LEVANTAMENTO DE PROCESSOS EM PROCEDIMENTO LICITATÓRIOS E DE CONTRATAÇÃO DA UEMA/2026";
-                aoa.push(row2); // Linha 2
+                buildDynamicMultiFilters();
+                renderTable();
+            }
 
-                const row3 = new Array(14).fill(null);
-                row3[1] = "TRAMITAÇÃO SEI";
-                row3[8] = "TRAMITAÇÃO SIGA E STARTGOV";
-                aoa.push(row3); // Linha 3
+            // FUNÇÃO: COPIAR PARA O WHATSAPP (SEM RESUMIR E SEM DOIS ASTERISCOS)
+            function copyToWhatsApp() {
+                if (state.filteredRows.length === 0) {
+                    alert("Não há registros filtrados para copiar.");
+                    return;
+                }
 
-                // Linha 4: Cabeçalhos oficiais
-                aoa.push([...OFFICIAL_COLUMNS]);
+                const total = state.filteredRows.length;
+                let sum = 0, authorized = 0, pending = 0, contracted = 0;
 
-                // Linhas 5+: Registros
-                rowsToExport.forEach(r => {
-                    const rowData = [];
-                    OFFICIAL_COLUMNS.forEach(colName => {
-                        let val = r[colName];
-                        if (colName === "VALOR TOTAL" && r._numValorTotal) {
-                            val = r._numValorTotal;
+                state.filteredRows.forEach(r => {
+                    for (let k in r) {
+                        if (k.startsWith('_num_')) sum += (r[k] || 0);
+                    }
+                    const textRow = Object.values(r).join(' ').toUpperCase();
+                    if (textRow.includes("AUTORIZADO")) authorized++;
+                    if (textRow.includes("AGUARD")) pending++;
+                    if (textRow.includes("CONTRATADO") || textRow.includes("FINALIZADO") || textRow.includes("ASSINADO")) contracted++;
+                });
+
+                const avg = total > 0 ? sum / total : 0;
+
+                let msg = "";
+                msg += "🏛️ *UNIVERSIDADE ESTADUAL DO MARANHÃO - UEMA*\n";
+                msg += "📋 *PAINEL DE PROCESSOS - SIGA & STARTGOV*\n";
+                msg += "📅 *Gerado em:* " + new Date().toLocaleDateString('pt-BR') + " às " + new Date().toLocaleTimeString('pt-BR') + "\n";
+                msg += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+                msg += "📊 *RESUMO EXECUTIVO*\n";
+                msg += "• *Total de Processos:* " + total + " de " + state.rows.length + "\n";
+                msg += "• *Montante Total:* " + formatCurrency(sum) + "\n";
+                msg += "• *Média por Processo:* " + formatCurrency(avg) + "\n";
+                msg += "• *Processos Autorizados:* " + authorized + " (" + (total > 0 ? ((authorized/total)*100).toFixed(1) : 0) + "%)\n";
+                msg += "• *Aguardando Autorização:* " + pending + " (" + (total > 0 ? ((pending/total)*100).toFixed(1) : 0) + "%)\n";
+                msg += "• *Contratados / Assinados:* " + contracted + " (" + (total > 0 ? ((contracted/total)*100).toFixed(1) : 0) + "%)\n";
+                msg += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+                msg += "📁 *RELAÇÃO DETALHADA DE PROCESSOS*\n\n";
+
+                state.filteredRows.forEach((row, idx) => {
+                    msg += "🔹 *Processo [" + (idx + 1) + " de " + total + "]*\n";
+                    
+                    state.headers.forEach(h => {
+                        const val = row[h];
+                        let cleanVal = "";
+                        
+                        if (h.toUpperCase().includes("VALOR") && row[`_num_${h}`] !== undefined) {
+                            cleanVal = formatCurrency(row[`_num_${h}`]);
+                        } else if (isDateColumn(h) || val instanceof Date) {
+                            cleanVal = formatDateBRL(val);
+                        } else {
+                            cleanVal = val !== null && val !== undefined ? String(val).trim() : "-";
                         }
-                        rowData.push(val !== undefined ? val : null);
+
+                        if (!cleanVal) cleanVal = "-";
+                        cleanVal = cleanVal.replace(/\*\*/g, '*');
+                        
+                        msg += "• *" + h + ":* " + cleanVal + "\n";
+                    });
+                    
+                    msg += "────────────────────────────\n";
+                });
+
+                msg = msg.replace(/\*\*/g, '*');
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(msg).then(() => {
+                        showWhatsAppToast(`Copiado! ${total} processo(s) prontos para o WhatsApp.`);
+                    }).catch(() => {
+                        fallbackCopyText(msg, total);
+                    });
+                } else {
+                    fallbackCopyText(msg, total);
+                }
+            }
+
+            function fallbackCopyText(text, total) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showWhatsAppToast(`Copiado! ${total} processo(s) prontos para o WhatsApp.`);
+                } catch (err) {
+                    alert("Não foi possível copiar automaticamente. Selecione e copie manualmente.");
+                }
+                document.body.removeChild(textArea);
+            }
+
+            function showWhatsAppToast(text) {
+                const toast = document.getElementById('whatsappToast');
+                const msgEl = document.getElementById('toastMsg');
+                if (msgEl) msgEl.innerText = text;
+                toast.style.display = 'flex';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3500);
+            }
+
+            // EXPORTAÇÃO XLSX
+            function exportToXLSX() {
+                if (state.filteredRows.length === 0) {
+                    alert("Não há dados para exportação.");
+                    return;
+                }
+
+                const aoa = [];
+                aoa.push([...state.headers]);
+
+                state.filteredRows.forEach(r => {
+                    const rowData = state.headers.map(h => {
+                        if (h.toUpperCase().includes("VALOR") && r[`_num_${h}`] !== undefined) return r[`_num_${h}`];
+                        if (isDateColumn(h) || r[h] instanceof Date) return formatDateBRL(r[h]);
+                        return r[h] !== undefined ? r[h] : "";
                     });
                     aoa.push(rowData);
                 });
 
-                // Cria o workbook com a aba exatamente com nome "SIGA 2026"
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(aoa);
+                XLSX.utils.book_append_sheet(wb, ws, state.currentSheet || "Processos");
 
-                XLSX.utils.book_append_sheet(wb, ws, TARGET_SHEET_NAME);
-
-                const fileName = `Processos_SIGA_2026_Exportado_${new Date().toISOString().slice(0, 10)}.xlsx`;
-                XLSX.writeFile(wb, fileName);
+                XLSX.writeFile(wb, `Processos_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
             }
 
-            // EXPORTAÇÃO PDF OFICIAL VIA jsPDF + AutoTable
+            // EXPORTAÇÃO PDF OFICIAL ESTILO RELATÓRIO COM DATAS BRASILEIRAS
             function exportToPDF() {
-                const rowsToExport = getActiveCalculationRows();
-                if (rowsToExport.length === 0) {
-                    alert("Não há registros selecionados ou filtrados para exportação.");
+                if (state.filteredRows.length === 0) {
+                    alert("Não há dados para exportação.");
                     return;
                 }
 
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'pt',
-                    format: 'a4'
-                });
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
 
-                // Cabeçalho UEMA
                 doc.setFillColor(0, 51, 102);
-                doc.rect(0, 0, 842, 54, 'F');
-
+                doc.rect(0, 0, 842, 50, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(13);
                 doc.setFont('helvetica', 'bold');
-                doc.text("UNIVERSIDADE ESTADUAL DO MARANHÃO - UEMA", 30, 24);
-                
+                doc.text("UNIVERSIDADE ESTADUAL DO MARANHÃO - UEMA", 30, 22);
                 doc.setFontSize(8.5);
                 doc.setFont('helvetica', 'normal');
-                doc.text("Pró-Reitoria de Planejamento e Administração | Painel de Processos Licitatórios - SIGA 2026", 30, 40);
-
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR');
-                doc.text(`Exportado em: ${dateStr}`, 690, 40);
-
-                // Métricas do Relatório
-                let totalVal = 0;
-                rowsToExport.forEach(d => totalVal += (d._numValorTotal || 0));
-
-                doc.setTextColor(15, 23, 42);
-                doc.setFontSize(8.5);
-                doc.setFont('helvetica', 'bold');
-                doc.text(`Total de Processos: ${rowsToExport.length}`, 30, 72);
-                doc.text(`Montante Financeiro Total: ${formatCurrencyBRL(totalVal)}`, 200, 72);
-                doc.setFont('helvetica', 'normal');
-                const isSelection = state.selectedRowKeys.size > 0;
-                doc.text(`* Relatório gerado a partir de ${isSelection ? 'seleção manual de processos' : 'filtros ativos em tela'}.`, 480, 72);
-
-                const tableHeaders = [
-                    ["ANO/Nº", "PROCESSO SEI", "MODALIDADE", "RESUMO DO OBJETO", "VALOR TOTAL", "FONTE", "STATUS SOLICITAÇÃO", "DT AUTORIZAÇÃO", "PROCESSO SIGA", "LOCALIZAÇÃO ATUAL", "STATUS FINAL"]
-                ];
-
-                const tableBody = rowsToExport.map(item => [
-                    item['ANO/NUMERO'] || '',
-                    String(item['Nº PROCESSO SEI'] || ''),
-                    item['MODALIDADE'] || '',
-                    item['RESUMO DO OBJETO'] || '',
-                    formatCurrencyBRL(item._numValorTotal || 0),
-                    item['FONTE'] || '',
-                    item['STATUS DA SOLICITAÇÃO'] || '',
-                    item._dateAutorizacao ? formatDateBRL(item._dateAutorizacao) : String(item['DATA DA AUTORIZAÇÃO'] || ''),
-                    item['Nº PROCESSO SIGA'] || '',
-                    item['LOCALIZAÇÃO ATUAL'] || '',
-                    item['STATUS FINAL'] || 'EM TRAMITAÇÃO'
-                ]);
-
-                doc.autoTable({
-                    head: tableHeaders,
-                    body: tableBody,
-                    startY: 85,
-                    theme: 'grid',
-                    styles: {
-                        fontSize: 6.5,
-                        cellPadding: 3,
-                        textColor: [30, 41, 59],
-                        overflow: 'linebreak'
-                    },
-                    headStyles: {
-                        fillColor: [0, 51, 102],
-                        textColor: [255, 255, 255],
-                        fontStyle: 'bold',
-                        halign: 'left'
-                    },
-                    columnStyles: {
-                        0: { cellWidth: 50 },
-                        1: { cellWidth: 65 },
-                        2: { cellWidth: 65 },
-                        3: { cellWidth: 195 },
-                        4: { cellWidth: 65, halign: 'right' },
-                        5: { cellWidth: 55 },
-                        6: { cellWidth: 60 },
-                        7: { cellWidth: 50 },
-                        8: { cellWidth: 65 },
-                        9: { cellWidth: 65 },
-                        10: { cellWidth: 60 }
-                    },
-                    didDrawPage: function(data) {
-                        doc.setFontSize(7);
-                        doc.setTextColor(100, 116, 139);
-                        doc.text(
-                            `Página ${doc.internal.getNumberOfPages()}`,
-                            data.settings.margin.left,
-                            doc.internal.pageSize.height - 12
-                        );
-                    }
-                });
-
-                doc.save(`Relatorio_Processos_SIGA_2026_${now.toISOString().slice(0, 10)}.pdf`);
-            }
-
-            // IMPRESSÃO NATIVA
-            function printReport() {
-                const rowsToPrint = getActiveCalculationRows();
-                const thead = document.getElementById('printReportThead');
-                const tbody = document.getElementById('printReportTbody');
-                const summaryBox = document.getElementById('printReportSummary');
-                const meta = document.getElementById('printReportMeta');
-
-                meta.innerText = `Gerado em: ${new Date().toLocaleString('pt-BR')} | Base: ${state.currentFileName} | Aba: ${TARGET_SHEET_NAME}`;
+                doc.text("Painel de Acompanhamento de Processos Licitatórios - SIGA / StartGov", 30, 38);
+                doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`, 650, 38);
 
                 let sum = 0;
-                rowsToPrint.forEach(r => sum += (r._numValorTotal || 0));
-
-                summaryBox.innerHTML = `
-                    <div class="item"><strong>Processos:</strong> ${rowsToPrint.length} de ${state.normalizedRows.length}</div>
-                    <div class="item"><strong>Montante Total:</strong> ${formatCurrencyBRL(sum)}</div>
-                    <div class="item"><strong>Filtros Ativos:</strong> ${document.getElementById('activeFilterBadgeCount').innerText}</div>
-                    <div class="item"><strong>Seleção Manual:</strong> ${state.selectedRowKeys.size > 0 ? 'Sim (' + state.selectedRowKeys.size + ')' : 'Não'}</div>
-                `;
-
-                const printCols = [
-                    'Nº PROCESSO SEI', 'MODALIDADE', 'RESUMO DO OBJETO', 'VALOR TOTAL',
-                    'FONTE', 'STATUS DA SOLICITAÇÃO', 'LOCALIZAÇÃO ATUAL', 'STATUS FINAL'
-                ];
-
-                let ths = "<tr>";
-                printCols.forEach(c => ths += `<th>${escapeHtml(c)}</th>`);
-                ths += "</tr>";
-                thead.innerHTML = ths;
-
-                let trs = "";
-                rowsToPrint.forEach(r => {
-                    trs += "<tr>";
-                    printCols.forEach(c => {
-                        const val = r[c];
-                        trs += `<td>${formatDisplayCell(c, val, r)}</td>`;
-                    });
-                    trs += "</tr>";
+                state.filteredRows.forEach(r => {
+                    for (let k in r) if (k.startsWith('_num_')) sum += (r[k] || 0);
                 });
-                tbody.innerHTML = trs;
 
-                window.print();
-            }
+                doc.setTextColor(20, 30, 45);
+                doc.setFontSize(8.5);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Total de Processos: ${state.filteredRows.length} | Montante Financeiro Total: ${formatCurrency(sum)}`, 30, 68);
 
-            // FORMATAÇÕES E HELPERS
-            function formatDisplayCell(headerName, rawVal, rowObj) {
-                if (rawVal === null || rawVal === undefined || String(rawVal).trim() === "") {
-                    return `<span style="color:#adb5bd; font-style:italic;">-</span>`;
-                }
+                const headCols = [...state.headers];
+                const bodyRows = state.filteredRows.map(r => {
+                    return headCols.map(h => {
+                        const val = r[h];
+                        if (h.toUpperCase().includes("VALOR") && r[`_num_${h}`] !== undefined) {
+                            return formatCurrency(r[`_num_${h}`]);
+                        }
+                        if (isDateColumn(h) || val instanceof Date) {
+                            return formatDateBRL(val);
+                        }
+                        return String(val ?? '');
+                    });
+                });
 
-                if (headerName === "VALOR TOTAL") {
-                    if (rowObj && rowObj._numValorTotal !== undefined) {
-                        return formatCurrencyBRL(rowObj._numValorTotal);
+                doc.autoTable({
+                    head: [headCols],
+                    body: bodyRows,
+                    startY: 78,
+                    theme: 'grid',
+                    styles: { fontSize: 6.5, cellPadding: 3, textColor: [30, 41, 59] },
+                    headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    didDrawPage: function(data) {
+                        doc.setFontSize(7);
+                        doc.setTextColor(120);
+                        doc.text(`Página ${doc.internal.getNumberOfPages()}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
                     }
-                    if (typeof rawVal === 'number') return formatCurrencyBRL(rawVal);
-                    return escapeHtml(String(rawVal));
-                }
+                });
 
-                if (headerName === "DATA DA AUTORIZAÇÃO" || headerName === "DATA DE AUTUAÇÃO") {
-                    const parsed = parseCellDate(rawVal);
-                    if (parsed) return formatDateBRL(parsed);
-                    return `<span style="color:var(--danger-color); font-weight:bold;">${escapeHtml(String(rawVal))}</span>`;
-                }
-
-                if (headerName === "Nº PROCESSO SEI" || headerName === "Nº PROCESSO SIGA") {
-                    return `<strong>${escapeHtml(String(rawVal))}</strong>`;
-                }
-
-                return escapeHtml(String(rawVal));
+                doc.save(`Relatorio_Processos_${new Date().toISOString().slice(0,10)}.pdf`);
             }
 
-            function parseCellDate(val) {
+            // FORMATAÇÃO E RECONHECIMENTO DE DATAS BRASILEIRAS (DD/MM/AAAA)
+            function isDateColumn(colName) {
+                if (!colName) return false;
+                const upper = String(colName).toUpperCase();
+                return upper.includes("DATA") || upper.startsWith("DT_") || upper.endsWith("_DT");
+            }
+
+            function parseToDateObject(val) {
                 if (!val) return null;
-                if (val instanceof Date && !isNaN(val)) return val;
+                if (val instanceof Date && !isNaN(val.getTime())) return val;
 
                 if (typeof val === 'number') {
                     const excelEpoch = new Date(Date.UTC(1899, 11, 30));
-                    const dateObj = new Date(excelEpoch.getTime() + val * 86400000);
-                    return !isNaN(dateObj) ? dateObj : null;
+                    const d = new Date(excelEpoch.getTime() + val * 86400000);
+                    return !isNaN(d.getTime()) ? d : null;
                 }
 
                 if (typeof val === 'string') {
                     const clean = val.trim();
-                    if (/^\d{4}-\d{2}-\d{2}/.test(clean)) {
-                        const d = new Date(clean);
-                        return !isNaN(d) ? d : null;
+                    const brMatch = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+                    if (brMatch) {
+                        return new Date(parseInt(brMatch[3], 10), parseInt(brMatch[2], 10) - 1, parseInt(brMatch[1], 10));
                     }
-                    const parts = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-                    if (parts) {
-                        const day = parseInt(parts[1], 10);
-                        const month = parseInt(parts[2], 10) - 1;
-                        const year = parseInt(parts[3], 10);
-                        const d = new Date(year, month, day);
-                        return !isNaN(d) ? d : null;
+                    const isoMatch = clean.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+                    if (isoMatch) {
+                        return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
                     }
+                    const parsedNative = new Date(clean);
+                    if (!isNaN(parsedNative.getTime())) return parsedNative;
                 }
 
                 return null;
             }
 
-            function formatDateBRL(date) {
-                if (!(date instanceof Date) || isNaN(date)) return "";
-                const d = String(date.getDate()).padStart(2, '0');
-                const m = String(date.getMonth() + 1).padStart(2, '0');
-                const y = date.getFullYear();
-                return `${d}/${m}/${y}`;
-            }
-
-            function formatCurrencyBRL(num) {
-                if (typeof num !== 'number' || isNaN(num)) num = 0;
-                return num.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            }
-
-            function getExcelColumnLetter(colIndex) {
-                let letter = "";
-                let temp = colIndex;
-                while (temp >= 0) {
-                    letter = String.fromCharCode((temp % 26) + 65) + letter;
-                    temp = Math.floor(temp / 26) - 1;
+            function formatDateBRL(val) {
+                if (val === null || val === undefined || String(val).trim() === "") return "";
+                
+                if (typeof val === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(val.trim())) {
+                    return val.trim();
                 }
-                return letter;
+
+                const d = parseToDateObject(val);
+                if (d && !isNaN(d.getTime())) {
+                    const dia = String(d.getDate()).padStart(2, '0');
+                    const mes = String(d.getMonth() + 1).padStart(2, '0');
+                    const ano = d.getFullYear();
+                    return `${dia}/${mes}/${ano}`;
+                }
+
+                return String(val);
             }
 
-            function sanitizeId(str) {
-                return String(str).replace(/[^a-zA-Z0-9_]/g, '_');
+            function formatDisplayCell(headerName, rawVal, rowObj) {
+                if (rawVal === null || rawVal === undefined || String(rawVal).trim() === "") {
+                    return "";
+                }
+
+                if (headerName.toUpperCase().includes("VALOR")) {
+                    if (rowObj && rowObj[`_num_${headerName}`] !== undefined) {
+                        return formatCurrency(rowObj[`_num_${headerName}`]);
+                    }
+                    return formatCurrency(rawVal);
+                }
+
+                if (isDateColumn(headerName) || rawVal instanceof Date) {
+                    return formatDateBRL(rawVal);
+                }
+
+                return escapeHtml(String(rawVal));
             }
 
-            function escapeHtml(str) {
-                return String(str)
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
+            // CONTROLE DE NAVEGAÇÃO SPA
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+                
+                const targetPane = document.getElementById(tabId);
+                if (targetPane) targetPane.style.display = 'flex';
+                
+                const targetBtn = document.querySelector(`[data-tab="${tabId}"]`);
+                if (targetBtn) targetBtn.classList.add('active');
+
+                if (tabId === 'tab-dashboard') {
+                    Object.values(state.charts).forEach(c => c.resize());
+                }
             }
 
-            function updateMetaDisplay(file, sheet, records, columns, status) {
-                document.getElementById('metaFileName').innerText = file;
-                document.getElementById('metaSheetName').innerText = sheet;
-                document.getElementById('metaLastImport').innerText = new Date().toLocaleTimeString('pt-BR');
-                document.getElementById('metaRecordCount').innerText = records;
-                document.getElementById('metaColumnCount').innerText = columns;
-
-                const badge = document.getElementById('importStatusBadge');
-                badge.className = `status-badge ${status}`;
-                if (status === 'valid') {
-                    badge.innerHTML = `<i class="fa-solid fa-check"></i> BASE VÁLIDA`;
-                } else if (status === 'error') {
-                    badge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> INCONFORMIDADES DETECTADAS (${state.validationLog.errors.length})`;
+            function openValidationModal() {
+                const tbody = document.getElementById('valTableBody');
+                if (state.errors.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:15px; color:var(--success-color); font-weight:bold;">Nenhum erro de fórmula encontrado.</td></tr>`;
                 } else {
-                    badge.innerHTML = `<i class="fa-solid fa-clock"></i> AGUARDANDO IMPORTAÇÃO`;
+                    let trs = "";
+                    state.errors.forEach(e => {
+                        trs += `<tr><td>${e.line}</td><td>${escapeHtml(e.col)}</td><td style="color:var(--danger-color); font-weight:bold;">${escapeHtml(String(e.val))}</td><td>${escapeHtml(e.error)}</td></tr>`;
+                    });
+                    tbody.innerHTML = trs;
                 }
+                openModal('modalValidation');
+            }
+
+            function openModal(id) { document.getElementById(id).classList.add('open'); }
+            function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+            function formatCurrency(val) {
+                return (val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+            function sanitizeId(str) { return String(str).replace(/[^a-zA-Z0-9_]/g, '_'); }
+            function escapeHtml(str) {
+                return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
             }
 
             return {
                 init,
-                handleRangeFilter,
+                switchTab,
+                reopenSheetModal,
+                handleModalSheetChange,
+                updateSheetPreview,
+                setIgnoreRowsCount,
+                confirmSheetImport,
+                toggleColumnDropdown,
+                filterColumnList,
+                selectAllColumns,
+                handleColumnPicker,
+                removeColumn,
+                handleSearch,
                 clearAllFilters,
-                applyFilters,
+                startCellEdit,
+                addNewColumn,
+                addNewRow,
+                deleteRow,
+                handleDragStart,
+                handleDragOver,
+                handleDragLeave,
+                handleDrop,
+                copyToWhatsApp,
+                exportToXLSX,
+                exportToPDF,
+                openValidationModal,
+                closeModal,
                 setRecordsPerPage,
                 goToPage,
                 sortTable,
-                handleTableSearch,
-                openProcessDetail,
-                openValidationModal,
-                closeModal,
-                exportToXLSX,
-                exportToPDF,
-                printReport,
-                toggleRowSelection,
-                selectAllFiltered,
-                clearSelection,
-                toggleSelectAllCheckbox
+                toggleFilterDropdown,
+                searchFilterOptions,
+                handleOptionToggle,
+                setMultiFilterAll,
+                resetSingleFilter,
+                toggleFilterCollapse
             };
         })();
 
-        window.addEventListener('DOMContentLoaded', () => {
-            window.app.init();
-        });
+        window.addEventListener('DOMContentLoaded', () => window.app.init());
     </script>
 </body>
 </html>
